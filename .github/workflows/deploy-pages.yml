@@ -29,17 +29,15 @@ jobs:
           cache: npm
 
       - name: Configure GitHub Pages
-        id: pages
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Set base path
-        run: echo "NEXT_PUBLIC_BASE_PATH=${{ steps.pages.outputs.base_path }}" >> "$GITHUB_ENV"
-
       - name: Build static site
         run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: ""
 
       - name: Disable Jekyll processing
         run: touch out/.nojekyll
