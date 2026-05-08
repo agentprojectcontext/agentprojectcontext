@@ -7,6 +7,9 @@ description: APC can include project-owned MCP configuration hints without repla
 
 APC may include project-owned MCP configuration hints.
 
+MCP itself is a protocol. APC does not implement the protocol. APC only gives the project a stable
+place to say which MCP servers are expected or useful for this repository.
+
 ## Canonical file
 
 ```text
@@ -15,10 +18,15 @@ APC may include project-owned MCP configuration hints.
 
 ## Purpose
 
-This file gives the project one local place to describe expected MCP servers in a way compatible
+This file gives the project one local place to describe expected MCP servers in a shape compatible
 tools can read.
 
 It does **not** replace MCP. It complements MCP.
+
+According to the official MCP architecture, an AI application acts as an MCP host, creates MCP
+clients, and connects each client to an MCP server. Servers expose primitives such as tools,
+resources, and prompts over transports such as `stdio` or Streamable HTTP. `.apc/mcps.json` is only
+configuration input for that process.
 
 ## Example
 
@@ -33,8 +41,82 @@ It does **not** replace MCP. It complements MCP.
 }
 ```
 
+## Allowed content
+
+Use `.apc/mcps.json` for portable project expectations:
+
+- server name
+- command and non-secret arguments
+- URL, when a remote MCP is part of the project contract
+- environment variable names the user must provide locally
+- enabled or disabled status, if a consumer supports it
+
+Do not store:
+
+- API keys
+- access tokens
+- OAuth refresh tokens
+- personal account IDs
+- private headers
+- generated session IDs
+
+Prefer this:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+Do not commit this:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_real_token_here"
+      }
+    }
+  }
+}
+```
+
+## Consumer behavior
+
+APC consumers may:
+
+- read `.apc/mcps.json`
+- merge it with IDE-specific MCP files
+- prefer APC entries when names conflict
+- start the server process
+- connect through MCP as a real MCP client
+- expose discovered tools to the model
+
+APC consumers should not:
+
+- treat `.apc/mcps.json` as a transcript store
+- mutate IDE-specific MCP files unless the user asked
+- write secrets into `.apc/mcps.json`
+- pretend APC is a substitute for MCP lifecycle, transport, or schema rules
+
 ## Why keep it in APC
 
 Without a project-owned MCP hint file, teams often duplicate MCP setup across editor-specific
 locations. Putting the project expectation in `.apc/mcps.json` reduces drift while preserving MCP
 as the external tool protocol.
+
+## References
+
+- [MCP introduction](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [MCP architecture overview](https://modelcontextprotocol.io/docs/learn/architecture)

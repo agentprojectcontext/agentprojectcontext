@@ -7,7 +7,8 @@ This directory shows the current repository layout:
 - root `AGENTS.md`
 - project context under `.apc/`
 - per-agent memory files
-- example sessions and skills
+- reusable skills
+- MCP hints without secrets
 
 ## What's here
 
@@ -18,9 +19,7 @@ This directory shows the current repository layout:
 │   ├── project.json
 │   ├── agents/
 │   │   ├── sofia/
-│   │   │   ├── memory.md
-│   │   │   └── sessions/
-│   │   │       └── 2026-05-07-onboarding.md
+│   │   │   └── memory.md
 │   │   └── martin/
 │   │       └── memory.md
 │   ├── skills/
@@ -35,5 +34,6 @@ This directory shows the current repository layout:
 ## Notes
 
 - This example reflects the current implementation in this repository.
-- Some current runtime artifacts, such as `project.db` or message logs, are consumer-specific extensions rather than APC portable-core requirements.
+- Runtime artifacts, such as sessions, conversations, `project.db`, or message logs, are not APC portable-core content.
+- APX stores runtime state under `~/.apx/projects/<project-id>/`; IDEs keep their own runtime state in their own local stores.
 - The broader APC docs live in the repository root under [README](../../README.md) and [`docs/`](../../docs/).

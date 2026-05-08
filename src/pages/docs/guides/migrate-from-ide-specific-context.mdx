@@ -21,7 +21,7 @@ A project may already have context spread across:
 
 ### 1. Inventory durable context
 
-Separate project-owned meaning from runtime-local preferences.
+Separate project-owned meaning from runtime-local state.
 
 Project-owned:
 
@@ -29,6 +29,7 @@ Project-owned:
 - stable instructions
 - reusable workflows
 - durable memory
+- MCP expectations without secrets
 
 Runtime-local:
 
@@ -36,6 +37,11 @@ Runtime-local:
 - personal aliases
 - UI preferences
 - machine-local paths
+- raw sessions
+- provider transcripts
+- tool call logs
+- local message stores
+- runtime databases
 
 ### 2. Consolidate root agent definitions
 
@@ -47,13 +53,34 @@ Move repeated instruction blocks into `.apc/skills/`.
 
 ### 4. Create durable memory files
 
-Move long-lived facts from chat history or hidden runtime stores into `.apc/agents/<slug>/memory.md`.
+Move only curated long-lived facts from chat history or hidden runtime stores into
+`.apc/agents/<slug>/memory.md`.
+
+Do not move raw sessions into `.apc/`.
 
 ### 5. Add MCP hints only if they are project-owned
 
 If the project expects certain MCP servers, document them in `.apc/mcps.json`.
 
+Keep secrets in the user's environment or runtime config.
+
+### 6. Leave sessions with their runtime
+
+Do not centralize sensitive raw transcripts inside `.apc/`.
+
+Recommended behavior:
+
+- Codex keeps Codex sessions in Codex storage
+- Claude Code keeps Claude sessions in Claude storage
+- OpenCode keeps OpenCode state in OpenCode storage
+- APX keeps APX sessions in `~/.apx/projects/<project-id>/`
+
+If the project needs continuity, write a short sanitized decision summary into APC memory or docs.
+
 ## Keep tool-specific files where needed
 
 APC does not require deleting every tool-specific folder. The goal is to stop duplicating the same
 project meaning across all of them.
+
+Keep tool-specific files when they contain runtime mechanics, UI settings, or private state. Remove
+or shrink them when they only duplicate project meaning already represented by APC.

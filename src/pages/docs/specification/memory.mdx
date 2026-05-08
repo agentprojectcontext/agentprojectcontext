@@ -5,13 +5,18 @@ description: APC memory files let projects preserve durable agent-specific conte
 
 # Memory
 
-Memory in APC is durable context tied to a project agent.
+Memory in APC is durable, curated context tied to a project agent.
+
+It is not raw chat history.
 
 ## Location
 
 ```text
 .apc/agents/<slug>/memory.md
 ```
+
+This file is optional. Use it only for information safe and useful to share with everyone who can
+read the repository.
 
 ## Why markdown
 
@@ -47,18 +52,31 @@ Good APC memory contains information that remains useful across sessions and acr
 - durable team expectations
 - decisions and their rationale
 
-Transient scratch notes and raw session history belong in `sessions/`, not `memory.md`.
+Do not put these in APC memory:
 
-## Memory vs sessions
+- raw session history
+- full transcripts
+- customer data
+- credentials
+- personal preferences
+- local paths useful only on one machine
+- unreviewed model output
 
-| | `memory.md` | `sessions/` |
+Runtime-local memory belongs in the runtime's storage, not in `.apc/`.
+
+## Project memory vs runtime memory
+
+| | APC `memory.md` | Runtime memory / sessions |
 |---|---|---|
-| Visibility | `project` — commit if useful | `local` — gitignored by default |
-| Written by | Agent (curated) | Agent (raw log) |
-| Readable by | All agents, all IDEs | Local runtime only |
-| Purpose | Durable facts | Full conversation history |
+| Visibility | Project-shared | Local or runtime-private |
+| Location | `.apc/agents/<slug>/memory.md` | Runtime-owned directory |
+| Version control | Commit only if safe | Never commit by default |
+| Written by | Human or agent after curation | Runtime |
+| Purpose | Durable facts and decisions | Full history, scratch state, private notes |
 
-The intended pattern: agents run sessions locally, then extract meaningful decisions and facts into `memory.md`. The session stays local. The memory travels with the repo.
+The intended pattern: agents run sessions locally, then extract meaningful decisions and facts into
+`memory.md` only when those facts are safe for the whole project. The session stays local. Curated
+project memory travels with the repo.
 
 ## Persistence levels
 
@@ -68,8 +86,9 @@ APC defines five visibility levels for `.apc/` content:
 |---|---|---|
 | `stable` | Agent definitions, skills, rules | Commit |
 | `project` | `memory.md`, `AGENTS.md`, `project.json` | Commit |
-| `local` | `sessions/`, `chats/`, `cache/` | Gitignored |
+| `local` | Runtime sessions, chats, caches | Outside `.apc/` or gitignored |
 | `private` | Secrets, credentials, `*.secret.json` | Gitignored, never commit |
 | `ephemeral` | `tmp/`, build artifacts | Gitignored |
 
-`memory.md` is `project` visibility by default — it is safe to commit and useful for team continuity. Raw sessions are `local` and never committed unless the user explicitly curates and exports them.
+`memory.md` is `project` visibility only after curation. Raw sessions are `local` and never
+committed unless the user explicitly exports sanitized content into a separate project document.

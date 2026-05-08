@@ -24,7 +24,7 @@ this page uses the broader “workspace” label.
 {
   "name": "My Project",
   "version": "0.1.0",
-  "apf": "0.1.0",
+  "apc": "0.1.0",
   "created": "2026-05-08T00:00:00Z"
 }
 ```
@@ -40,5 +40,5 @@ The metadata file should answer:
 
 ## Compatibility note
 
-The current implementation accepts the historical `apf` version key for compatibility. Future APC
-revisions may standardize `apc` as the preferred key name.
+Older implementations may still write the historical `apf` version key. Compatible consumers should
+accept it for migration, but new projects should prefer `apc`.

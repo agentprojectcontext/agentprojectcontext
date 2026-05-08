@@ -70,6 +70,25 @@ a {
   margin: 2rem 0;
 }
 
+.apc-flow-figure {
+  margin: 2rem 0;
+}
+
+.apc-flow-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--apc-border-light);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+}
+
+.dark .apc-flow-figure img {
+  border-color: var(--apc-border-dark);
+  box-shadow: none;
+}
+
 .apc-card {
   border: 1px solid var(--apc-border-light);
   background: var(--apc-surface-light);

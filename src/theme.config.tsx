@@ -2,7 +2,7 @@ import React from 'react'
 import type { DocsThemeConfig } from 'nextra-theme-docs'
 
 const repositoryUrl =
-  process.env.NEXT_PUBLIC_GITHUB_REPO || 'https://github.com/your-org/apc'
+  process.env.NEXT_PUBLIC_GITHUB_REPO || 'https://github.com/agentprojectcontext/agentprojectcontext'
 
 const docsRepositoryBase =
   process.env.NEXT_PUBLIC_DOCS_REPO_BASE || `${repositoryUrl}/tree/main/src/pages`

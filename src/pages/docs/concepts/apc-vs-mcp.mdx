@@ -7,14 +7,22 @@ description: APC and MCP solve different layers of the agent tooling stack.
 
 APC and MCP are complementary, not competing.
 
+MCP is an open protocol for connecting AI applications to external systems such as files,
+databases, tools, services, and workflows. The official MCP documentation describes MCP with a
+host/client/server architecture, JSON-RPC messages, capability negotiation, and primitives such as
+tools, resources, and prompts.
+
+APC does not redefine that protocol. APC gives a repository a portable place to say which project
+context and MCP expectations matter.
+
 ## Different layers
 
 | Layer | APC | MCP |
 | --- | --- | --- |
 | Primary concern | Project-owned context | External tool connectivity |
-| Typical contents | agents, skills, memory, metadata | tools, transports, schemas, requests |
-| Where it lives | repository filesystem | servers and client integrations |
-| Main question | “What context does this project expose?” | “What tools can this agent call?” |
+| Typical contents | agents, skills, rules, metadata, safe memory, MCP hints | tools, resources, prompts, transports, schemas, requests |
+| Where it lives | repository filesystem | MCP servers and MCP client integrations |
+| Main question | "What should an agent know about this project?" | "What external capabilities can this AI app call?" |
 
 ## APC
 
@@ -34,10 +42,13 @@ MCP standardizes connections between AI systems and external tools or services.
 
 Typical MCP concerns:
 
-- tool registration
-- transports
+- host, client, and server roles
+- `stdio` and Streamable HTTP transports
+- JSON-RPC lifecycle and capability negotiation
+- tools, resources, and prompts
 - request and response schemas
-- remote capability discovery
+- tool discovery through `tools/list`
+- tool execution through `tools/call`
 
 ## Working together
 
@@ -45,7 +56,50 @@ An APC project may include `.apc/mcps.json` to declare project-owned MCP expecta
 not replace MCP. It gives compatible tools a local place to discover which MCP servers matter to
 the project.
 
+For example:
+
+```text
+project-root/
+└── .apc/
+    └── mcps.json      ← project says "this filesystem MCP matters here"
+```
+
+An MCP host or helper runtime still performs the real MCP work:
+
+```text
+AI application / runtime
+└── MCP client
+    └── MCP server     ← exposes tools/resources/prompts over MCP
+```
+
+## Boundary rule
+
+`.apc/mcps.json` should be treated as a project-owned hint file, not as an MCP server and not as a
+secret store.
+
+Good `.apc/mcps.json` content:
+
+- server names
+- commands or URLs needed by the project
+- non-secret arguments
+- environment variable names, when useful
+
+Bad `.apc/mcps.json` content:
+
+- API keys
+- bearer tokens
+- personal account IDs
+- runtime session IDs
+- provider conversation URLs
+
 ## Practical summary
 
 - Use **APC** to describe the project.
 - Use **MCP** to reach tools outside the model.
+- Use **APX or another runtime** if you want one local daemon to read APC, merge MCP configs, and
+  dispatch agents across tools.
+
+## References
+
+- [MCP introduction](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [MCP architecture overview](https://modelcontextprotocol.io/docs/learn/architecture)

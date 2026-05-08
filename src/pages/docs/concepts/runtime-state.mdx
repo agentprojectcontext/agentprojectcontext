@@ -1,0 +1,83 @@
+---
+title: Runtime State
+description: APC separates portable project context from sessions, transcripts, caches, and other runtime-owned state.
+---
+
+# Runtime State
+
+Runtime state is everything produced while an agent runs.
+
+APC deliberately keeps runtime state outside `.apc/` by default.
+
+## What counts as runtime state
+
+Runtime state includes:
+
+- raw sessions
+- provider conversation threads
+- tool call transcripts
+- temporary scratch notes
+- local databases and indexes
+- message logs
+- daemon caches
+- IDE-specific metadata
+- private or personal memory
+
+This data often contains sensitive prompts, credentials pasted by mistake, customer data, local
+paths, or intermediate reasoning. It should not travel with the repository unless a human explicitly
+exports and sanitizes it.
+
+## Where runtime state belongs
+
+Each runtime should own its own state directory.
+
+Examples:
+
+```text
+~/.codex/...                  ← Codex sessions and transcripts
+~/.claude/...                 ← Claude Code sessions and transcripts
+~/.config/opencode/...        ← OpenCode runtime state
+~/.apx/projects/<project-id>/ ← APX runtime state
+```
+
+The exact paths are runtime-specific. APC only requires that raw runtime data does not live in the
+portable `.apc/` project contract.
+
+## What can move back into APC
+
+Only curated project knowledge should move back into APC.
+
+Good candidates:
+
+- durable decisions
+- architecture constraints
+- agent responsibilities
+- reusable workflows
+- safe facts useful to all contributors
+
+Bad candidates:
+
+- full transcripts
+- raw command output
+- customer data
+- secrets
+- personal notes
+- model-specific reasoning traces
+
+## Session summary pattern
+
+At the end of a task, a runtime may produce a short summary. That summary can be used to update
+project memory only if it is useful, safe, and durable.
+
+Recommended flow:
+
+1. Run the agent in its own runtime.
+2. Keep raw transcript in that runtime's local store.
+3. Extract durable decisions manually or through an approved helper.
+4. Write only sanitized project knowledge to APC.
+
+## Why this matters
+
+If sessions live inside `.apc/`, different IDEs can accidentally read each other's sensitive data.
+They can also commit private history to the repository. Moving sessions outside APC gives every IDE
+its own privacy boundary while preserving one shared project contract.

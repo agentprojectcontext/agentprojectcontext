@@ -1,0 +1,161 @@
+---
+title: APX CLI
+description: APX CLI commands for consuming APC projects, managing local runtime state, and dispatching agents.
+---
+
+# APX CLI
+
+APX is the reference runtime for APC projects.
+
+APC defines portable project context in the repository. APX adds a local CLI and daemon around that
+context. APX runtime state belongs outside `.apc/`, under `~/.apx/`.
+
+Repository: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx).
+
+## Command shape
+
+```bash
+apx <command> [subcommand] [args] [--flags]
+apx --help
+apx --version
+```
+
+## Project commands
+
+```bash
+apx init [path] --name "My Project"
+apx project add <path>
+apx project list
+apx project remove <path-or-id>
+apx project rebuild [<path-or-id>]
+apx project import <github-url> --into <dir>
+```
+
+`apx init` creates the repository APC contract and initializes local APX runtime storage.
+
+Repository-owned files:
+
+```text
+AGENTS.md
+.apc/project.json
+.apc/agents/
+.apc/skills/
+.apc/mcps.json
+```
+
+Local runtime files:
+
+```text
+~/.apx/projects/<project-id>/
+```
+
+## Daemon commands
+
+```bash
+apx daemon start
+apx daemon stop
+apx daemon status
+apx daemon logs --tail 100 --follow
+```
+
+The daemon is local-first. It should bind to localhost and store process state in `~/.apx/`.
+
+## Agent commands
+
+```bash
+apx agent add sofia --role Support --model claude-haiku-4-5 --skills customer-support
+apx agent list
+apx agent get sofia
+apx agent remove sofia
+```
+
+Agent definitions are project context. APX may write `AGENTS.md` and `.apc/agents/<slug>.md`.
+
+Runtime output, transcripts, sessions, and local memory remain APX state.
+
+## Memory commands
+
+```bash
+apx memory sofia
+apx memory sofia --append "Durable safe fact"
+apx memory sofia --replace - < memory.md
+```
+
+APX memory commands edit agent memory. Treat that memory as curated project context: write only
+durable, safe facts that should be visible to future runs and contributors.
+
+## Session commands
+
+```bash
+apx session list [agent]
+apx session new <agent> --title "Task title" --body -
+apx session get <id> --body
+apx session update <id> --status "in progress"
+apx session close <id> --result "Done"
+apx session check
+apx session resume <id> --summary
+```
+
+Sessions are local runtime state. They must not be written into `.apc/`.
+
+APX may store session files under:
+
+```text
+~/.apx/projects/<project-id>/agents/<slug>/sessions/
+```
+
+If an external runtime such as Codex, Claude Code, OpenCode, or Aider provides its own transcript
+path, APX may record a pointer to that path. APX should not copy raw external transcripts into
+`.apc/`.
+
+## Runtime dispatch
+
+```bash
+apx run sofia --runtime codex "Review this project"
+apx run reviewer --runtime claude-code "Check the release notes"
+apx exec sofia "Summarize your role"
+```
+
+`apx run` dispatches work through an external runtime. APC supplies project context. The runtime
+supplies execution.
+
+`apx exec` calls a configured LLM engine directly through APX.
+
+Provider credentials belong in user-level configuration or environment variables, not in `.apc/`.
+
+## MCP commands
+
+```bash
+apx mcp list
+apx mcp check
+apx mcp tools filesystem
+apx mcp run filesystem read_file '{"path":"README.md"}'
+```
+
+APX can read `.apc/mcps.json`, merge compatible IDE-specific MCP config files, and call MCP tools
+through one CLI surface.
+
+APX still uses MCP as the protocol. `.apc/mcps.json` is only project-owned MCP configuration.
+
+## Messages and routines
+
+```bash
+apx messages tail
+apx messages tail --channel runtime
+apx messages search "deploy"
+
+apx routine list
+apx routine run <name>
+apx routine enable <name>
+apx routine disable <name>
+```
+
+Messages and routines are APX runtime features. Store their state outside `.apc/`.
+
+## Safety rules
+
+- Do not store secrets in `.apc/`.
+- Do not store raw sessions in `.apc/`.
+- Do not store provider transcripts in `.apc/`.
+- Do not treat APX runtime state as APC portable core.
+- Do use APC for durable project context that should travel with the repository.

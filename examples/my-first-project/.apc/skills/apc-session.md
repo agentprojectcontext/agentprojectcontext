@@ -1,18 +1,25 @@
 # apc-session
 
-You are running inside an **APC (Agent Project Framework)** project. APC gives you persistent state — sessions, memory, and a coordination layer with other agents — that survives across runs.
+You are running inside an **APC (Agent Project Context)** project. APC gives you portable project
+context. It does not own raw runtime sessions.
 
-The APX daemon has already created a session for this run. Its id is in the **APC Runtime Context** block at the bottom of your system prompt (look for `APC session id`). The filename is `.apc/agents/<your-slug>/sessions/<id>.md`.
+If APX started this run, the APX daemon may have created a local runtime session under:
+
+```text
+~/.apx/projects/<project-id>/agents/<your-slug>/sessions/
+```
+
+Your runtime may also have its own native transcript path. Do not move raw transcripts into `.apc/`.
 
 ## What you should do
 
 ### At the start of work
 
-If you haven't been told what to do, read the latest session in `.apc/agents/<your-slug>/sessions/` so you know where things were left.
+Read `AGENTS.md`, relevant `.apc/agents/<slug>.md`, and safe curated memory if present.
 
 ### During work
 
-Save anything durable to memory (so future runs see it without you having to re-read transcripts):
+Save only durable, safe facts to memory:
 
 ```bash
 apx memory <your-slug> --append "User confirmed the rate limit is 10/s, not 100/s"
@@ -26,7 +33,7 @@ apx session update <session-id> --status "🔄 implementing X"
 
 ### At the end
 
-Close the session with a one-line result:
+Close the APX runtime session with a one-line result if APX provided a session id:
 
 ```bash
 apx session close <session-id> --result "Implemented X. Tests pass. PR #142."
@@ -38,7 +45,7 @@ If you can't run `apx` (sandboxed shell, no PATH), print the result on the **las
 APC_RESULT: Implemented X. Tests pass. PR #142.
 ```
 
-APX captures that line automatically and writes it to the session file.
+APX captures that line automatically and writes it to its local runtime state.
 
 ## How another agent picks up where you left off
 
@@ -53,10 +60,12 @@ The session file links to your *external* transcript (Claude Code session jsonl,
 
 ## Cross-runtime memory
 
-If you discover a fact that's relevant beyond this session, append it to memory:
+If you discover a fact relevant beyond this session, append it to memory only after checking it is
+safe project context:
 
 ```bash
 apx memory <your-slug> --append "<fact>"
 ```
 
-That fact becomes part of the system prompt of every future run of this agent — across Claude Code, Codex, OpenCode, Aider, and any direct LLM call. Memory is the canonical channel for long-term knowledge.
+That fact can become part of future runs across Claude Code, Codex, OpenCode, Aider, and direct LLM
+calls. Raw sessions stay outside `.apc/`.

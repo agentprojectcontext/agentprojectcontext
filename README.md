@@ -8,17 +8,16 @@ This repository contains the APC specification and the source for the documentat
 
 ## This repo contains
 
-- `pages/` — Nextra documentation source
-- `docs/` — raw specification and design documents
+- `src/pages/` — Nextra documentation source
+- `src/pages/docs/specification/` — APC specification pages
+- `src/pages/docs/reference/` — reference material, including APX bridge notes
 - `examples/` — reference project layouts
 
-## Specification documents
+## Useful links
 
-- [`docs/APC-SPEC.md`](docs/APC-SPEC.md) — canonical on-disk format
-- [`docs/APC-OVERVIEW.md`](docs/APC-OVERVIEW.md) — motivation and design principles
-- [`docs/APX-CLI.md`](docs/APX-CLI.md) — reference CLI (APX)
-- [`docs/APX-DAEMON.md`](docs/APX-DAEMON.md) — reference daemon API (APX)
-- [`docs/APX-SKILL.md`](docs/APX-SKILL.md) — skill injection format
+- APC repo: [agentprojectcontext/agentprojectcontext](https://github.com/agentprojectcontext/agentprojectcontext)
+- APX repo: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx)
+- Docs: [agentprojectcontext.com](https://agentprojectcontext.com)
 
 ## Status
 

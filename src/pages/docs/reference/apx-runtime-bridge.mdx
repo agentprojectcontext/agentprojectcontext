@@ -1,0 +1,147 @@
+---
+title: APX Runtime Bridge
+description: APX is an optional runtime layer that can consume APC, centralize MCP access, and dispatch agents across tools.
+---
+
+# APX Runtime Bridge
+
+APX is not APC.
+
+APC is the portable project context convention. APX is an optional runtime implementation that can
+read APC and provide operational features around it.
+
+Reference repository: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx).
+
+## Problem APX can solve
+
+APC deliberately avoids runtime mechanics. That keeps the project contract stable, but leaves some
+practical problems unsolved:
+
+- each IDE may require separate MCP setup
+- each runtime stores sessions differently
+- agents cannot easily call each other across tools
+- Telegram or other remote control surfaces need a process always running
+- automation needs one local API instead of many IDE-specific integrations
+
+APX can sit above registered projects and provide that operational layer without moving private
+runtime state into `.apc/`.
+
+## Local daemon
+
+APX may run a local daemon, typically bound to localhost.
+
+The daemon can:
+
+- register multiple APC projects
+- read project context from each repository
+- keep runtime state in `~/.apx/projects/<project-id>/`
+- expose a local HTTP API
+- manage plugins such as Telegram
+- schedule routines
+- spawn external agent runtimes
+
+The daemon should not write raw sessions, conversations, message logs, or SQLite caches into
+`.apc/`.
+
+## One MCP surface
+
+MCP normally depends on each host or IDE creating MCP clients and connecting to MCP servers. That is
+correct protocol behavior, but it creates duplicate setup when a developer uses many tools.
+
+APX can help by reading MCP declarations from `.apc/mcps.json` and, when useful, merging compatible
+IDE-specific MCP config files into one local view.
+
+Then an agent can call a single APX command or API endpoint, and APX performs the MCP call through
+the configured MCP server.
+
+This does not replace MCP:
+
+- MCP still defines host/client/server behavior
+- MCP still defines JSON-RPC messages
+- MCP still defines tools, resources, prompts, transports, and capability negotiation
+- APX only acts as an implementation bridge
+
+## Super-agent
+
+APX can also run a daemon-level agent.
+
+This agent is useful when the user wants one control point for many projects and many runtimes. It
+can inspect registered projects, list agents, read safe context, call MCP tools, and dispatch work
+to project agents.
+
+Example responsibilities:
+
+- "List agents across all projects"
+- "Ask reviewer in project A to inspect latest diff"
+- "Run Codex on project B with this prompt"
+- "Call filesystem MCP for project C"
+- "Send result to Telegram"
+
+The super-agent should use tools for facts instead of guessing project names, agent slugs, or MCP
+names.
+
+## Telegram control
+
+APX may expose Telegram as a plugin.
+
+Telegram can act as a human control surface:
+
+- receive operator messages
+- route inbound messages to a project or super-agent
+- send outbound status updates
+- trigger routines or runtime dispatch
+
+Telegram tokens and chat IDs belong in APX user-level configuration, not in `.apc/`.
+
+## Multi-runtime dispatch
+
+APX can dispatch agents through different runtimes:
+
+- Codex
+- Claude Code
+- OpenCode
+- Aider
+- direct LLM engines such as OpenAI, Anthropic, Gemini, or Ollama
+
+The runtime supplies execution. APC supplies project context. APX connects both.
+
+## Correct boundary
+
+Use APC for:
+
+- project identity
+- agent definitions
+- skills
+- safe project memory
+- MCP hints without secrets
+
+Use APX for:
+
+- daemon lifecycle
+- MCP process management
+- runtime dispatch
+- Telegram
+- local messages
+- local sessions
+- local conversations
+- caches and indexes
+
+Use each IDE for:
+
+- its native transcripts
+- UI state
+- provider-specific session files
+- personal configuration
+
+## Security rule
+
+APX can coordinate many powerful tools. That makes separation more important, not less.
+
+Never store APX tokens, Telegram credentials, MCP secrets, provider API keys, or raw transcripts in
+`.apc/`. Keep them in user-level runtime configuration or environment variables.
+
+## Status
+
+APX is best understood as the reference runtime path for problems APC should not solve directly.
+
+APC should stay small and portable. APX can be opinionated, operational, and local-machine aware.

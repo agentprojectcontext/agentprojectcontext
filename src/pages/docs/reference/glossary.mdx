@@ -14,6 +14,11 @@ repository.
 
 Any tool, runtime, editor, or automation layer that reads APC data.
 
+## APX
+
+Optional runtime and daemon layer that can consume APC, manage local runtime state, merge MCP
+config views, and dispatch agents across tools.
+
 ## Agent Definition
 
 Project-owned description of an agent’s role, model preference, skills, or related metadata.
@@ -28,7 +33,18 @@ Canonical APC directory for project-owned context.
 
 ## Memory
 
-Durable agent-specific context stored in plain text and intended to persist across sessions.
+Curated agent-specific project context stored in plain text. It should contain durable safe facts,
+not raw transcripts.
+
+## Runtime State
+
+Local data produced by a running agent, such as sessions, conversations, messages, caches, and tool
+outputs. Runtime state belongs outside `.apc/`.
+
+## Session
+
+A runtime-owned record of an agent invocation or conversation. APC does not store raw sessions in
+its portable core.
 
 ## Skill
 

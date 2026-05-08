@@ -7,8 +7,8 @@ description: APC defines a portable .apc/ folder convention for agent-readable p
 
 APC is a filesystem convention for project-level agent context.
 
-Its purpose is to let a repository declare context that multiple tools can share without rewriting
-or rediscovering it for each environment.
+Its purpose is to let a repository declare context that multiple tools can share without rewriting,
+rediscovering, or leaking runtime-specific data.
 
 ## APC is about the project
 
@@ -21,6 +21,9 @@ runtime or editor. Examples include:
 - which long-lived facts should persist
 - which MCP endpoints the project expects to use
 
+This context should remain useful after switching from Codex to Claude Code, from Cursor to
+OpenCode, or from a local CLI to an automated runner.
+
 ## APC is not a runtime
 
 APC does not specify:
@@ -30,9 +33,25 @@ APC does not specify:
 - a database engine
 - a vendor-specific integration
 - a hosted service
+- where a specific IDE stores its transcripts
 
 A runtime may consume APC, extend it, cache it, or project it into another interface, but APC
 itself remains the portable layer.
+
+## APC is not a session store
+
+Raw sessions belong outside `.apc/`.
+
+Sessions are produced by a specific runtime and can contain sensitive data. A Codex session should
+stay in Codex-owned storage, a Claude Code session should stay in Claude-owned storage, and an APX
+session should stay in APX-owned storage. APC can reference or summarize a session only when the
+user explicitly curates safe project knowledge from it.
+
+The rule is simple:
+
+- store durable project meaning in APC
+- store runtime history in the runtime
+- store secrets nowhere in the repository
 
 ## Canonical example
 

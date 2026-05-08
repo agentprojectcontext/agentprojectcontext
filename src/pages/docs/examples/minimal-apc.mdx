@@ -10,9 +10,11 @@ my-project/
 ├── AGENTS.md
 └── .apc/
     ├── project.json
+    ├── mcps.json
     ├── skills/
     │   └── documentation.md
     └── agents/
+        ├── architect.md
         └── architect/
             └── memory.md
 ```
@@ -34,9 +36,22 @@ my-project/
 {
   "name": "my-project",
   "version": "0.1.0",
-  "apf": "0.1.0",
+  "apc": "0.1.0",
   "created": "2026-05-08T00:00:00Z"
 }
+```
+
+## `.apc/agents/architect.md`
+
+```markdown
+---
+role: System design
+model: claude-sonnet-4-6
+skills: documentation
+description: Owns system structure and migration safety.
+---
+
+Prioritize durable interfaces and migration safety.
 ```
 
 ## `.apc/skills/documentation.md`
@@ -55,3 +70,19 @@ Write concise technical docs with explicit scope and terminology.
 ## Identity
 - Owns system structure and migration safety
 ```
+
+## `.apc/mcps.json`
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}
+```
+
+No sessions are stored in `.apc/`. Raw runtime history stays with the IDE, CLI, or daemon that
+created it.

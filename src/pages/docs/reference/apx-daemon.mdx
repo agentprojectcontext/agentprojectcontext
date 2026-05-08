@@ -1,0 +1,218 @@
+---
+title: APX Daemon
+description: APX daemon architecture for local project registration, MCP access, runtime dispatch, Telegram, and routines.
+---
+
+# APX Daemon
+
+The APX daemon is a local runtime service for APC projects.
+
+It can turn repository context into an operational API without making APC itself a daemon protocol.
+
+Repository: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx).
+
+## Scope
+
+The daemon may:
+
+- register many APC projects
+- read `AGENTS.md` and `.apc/`
+- maintain local runtime state under `~/.apx/`
+- merge MCP configuration views
+- proxy MCP tool calls
+- dispatch agents through external runtimes
+- run a daemon-level super-agent
+- expose Telegram or other plugins
+- schedule routines and heartbeats
+
+The daemon must not:
+
+- write raw sessions into `.apc/`
+- write conversations into `.apc/`
+- write message logs into `.apc/`
+- write SQLite caches into `.apc/`
+- store secrets in project files
+
+## Lifecycle
+
+```bash
+apx daemon start
+apx daemon stop
+apx daemon status
+apx daemon logs --tail 100
+```
+
+Recommended defaults:
+
+```text
+host: 127.0.0.1
+port: 7430
+config: ~/.apx/config.json
+pid: ~/.apx/daemon.pid
+log: ~/.apx/daemon.log
+```
+
+The daemon should bind to localhost unless the user explicitly configures another trust boundary.
+
+## Storage model
+
+APC project contract:
+
+```text
+project-root/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    └── mcps.json
+```
+
+APX runtime state:
+
+```text
+~/.apx/projects/<project-id>/
+├── project.db
+├── messages/
+└── agents/
+    └── <slug>/
+        ├── sessions/
+        └── conversations/
+```
+
+`project.db` is a regenerable APX cache. It is not APC portable data.
+
+## Core API shape
+
+The daemon may expose local HTTP endpoints such as:
+
+| Area | Example path | Purpose |
+| --- | --- | --- |
+| Health | `GET /health` | Version, status, uptime |
+| Projects | `GET /projects` | Registered APC projects |
+| Agents | `GET /projects/:pid/agents` | Parsed project agents |
+| Memory | `GET /projects/:pid/agents/:slug/memory` | Curated agent memory |
+| Sessions | `GET /projects/:pid/agents/:slug/sessions` | APX runtime sessions |
+| MCPs | `GET /projects/:pid/mcps` | Merged MCP view |
+| MCP calls | `POST /projects/:pid/mcps/:name/call` | Proxy `tools/call` |
+| Runtimes | `POST /projects/:pid/agents/:slug/runtime` | Spawn external runtime |
+| Messages | `GET /projects/:pid/messages` | Local APX message history |
+| Routines | `GET /projects/:pid/routines` | Scheduled APX tasks |
+
+Endpoint names are APX implementation detail. APC consumers should not require the APX daemon.
+
+## MCP merge
+
+APX can read project MCP hints from:
+
+```text
+.apc/mcps.json
+```
+
+It may also inspect compatible tool-specific files:
+
+```text
+.mcp.json
+.cursor/mcp.json
+.vscode/mcp.json
+.roo/mcp.json
+.gemini/settings.json
+```
+
+APC entries should win when names conflict because `.apc/mcps.json` represents the project-owned
+intent.
+
+APX may call MCP tools through the daemon, but MCP remains the protocol. APX is an MCP host/client
+implementation bridge, not a replacement for MCP.
+
+## Runtime dispatch
+
+APX can spawn external runtimes:
+
+```text
+codex
+claude-code
+opencode
+aider
+```
+
+Dispatch flow:
+
+1. Read APC project context.
+2. Build the agent prompt from definition, skills, and safe memory.
+3. Create APX local session metadata.
+4. Spawn the selected runtime.
+5. Capture stdout, exit status, and external transcript path when available.
+6. Store APX session result under `~/.apx/`.
+
+Raw external transcripts stay with the runtime that created them.
+
+## Super-agent
+
+APX may run a daemon-level agent above all registered projects.
+
+Useful tools:
+
+- `list_projects`
+- `list_agents`
+- `list_mcps`
+- `read_agent_memory`
+- `list_files`
+- `read_file`
+- `tail_messages`
+- `search_messages`
+- `call_agent`
+- `call_mcp`
+- `call_runtime`
+- `send_telegram`
+
+The super-agent should call tools for facts. It should not invent project names, agent slugs, MCP
+server names, or runtime availability.
+
+## Telegram plugin
+
+Telegram can act as an operator surface:
+
+- receive inbound commands
+- route requests to a project or super-agent
+- send status updates
+- trigger routines
+- dispatch runtimes
+
+Telegram tokens, chat IDs, and routing secrets belong in APX user-level config, not `.apc/`.
+
+## Routines
+
+APX routines can run scheduled local work:
+
+- heartbeat messages
+- agent execution
+- Telegram notifications
+- shell commands with timeouts
+- manual triggers
+
+Routine state is APX runtime state.
+
+## Failure handling
+
+Recommended behavior:
+
+| Failure | Behavior |
+| --- | --- |
+| Daemon already running | No-op or report status |
+| Port in use | Refuse and suggest another port |
+| MCP process crash | Mark unhealthy and respawn on next call |
+| Runtime missing | Report runtime detection result |
+| Telegram rate limit | Backoff and retry within plugin limits |
+| Project moved | Require re-registration or rebuild |
+
+## Security rule
+
+APX coordinates powerful local capabilities. Keep its trust boundary explicit:
+
+- localhost by default
+- no secrets in `.apc/`
+- no raw sessions in `.apc/`
+- no provider transcripts in `.apc/`
+- user-level config for credentials
+- project files for project intent only

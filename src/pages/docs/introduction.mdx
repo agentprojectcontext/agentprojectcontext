@@ -8,14 +8,32 @@ description: APC is a portable convention for storing project-level context for 
 APC, Agent Project Context, is a portable convention for storing agent-readable project context
 inside a repository.
 
-APC focuses on one layer:
+It answers one narrow question:
 
-- what context a project owns
-- where that context lives
-- how compatible tools can discover and interpret it
+> What should every compatible agent know when it enters this project?
 
-APC does not define how a runtime executes an agent. It defines how a project exposes durable
-context to many possible runtimes and tools.
+APC is not an agent runner, database, daemon, IDE plugin, or chat transcript store. It is the
+project-owned context layer that many tools can read before they start work.
+
+<figure className="apc-flow-figure">
+  <img
+    src="/images/apc-context-flow.webp"
+    alt="APC as a shared project context layer between AI applications and project data, knowledge, tools, and integrations."
+    width="1280"
+    height="721"
+  />
+</figure>
+
+## The split APC enforces
+
+Agent systems usually mix three different things:
+
+- project contract: durable rules, roles, skills, architecture notes, MCP expectations
+- runtime state: sessions, conversations, tool outputs, caches, personal memory, provider threads
+- private configuration: API keys, tokens, local paths, personal preferences
+
+APC keeps only the project contract in the repository. Runtime state and private configuration stay
+outside the repository, owned by the IDE, CLI, daemon, or user machine that produced them.
 
 ## Goals
 
@@ -23,19 +41,33 @@ context to many possible runtimes and tools.
 - keep durable context close to the codebase
 - make context inspectable, reviewable, and versionable
 - provide a neutral layer for agents, IDEs, and developer automation
+- prevent raw sessions and private tool output from being committed by accident
+- let different runtimes consume the same project contract without sharing sensitive transcripts
 
 ## Canonical directory
 
-The APC idea begins as a generic shared context folder. In the current draft, the canonical name is
-`/.apc/`.
+The canonical repository directory is:
+
+```text
+.apc/
+```
 
 Typical APC content includes:
 
 - project metadata
 - agent definitions
 - skills
-- memory
-- optional MCP configuration hints
+- curated project memory, only when safe to share
+- optional MCP configuration hints, without secrets
+
+Typical APC content does not include:
+
+- raw chat sessions
+- provider conversation threads
+- tool call logs
+- local SQLite databases
+- API keys or bearer tokens
+- personal preferences for one IDE
 
 ## Relationship to existing tooling
 
@@ -46,5 +78,10 @@ APC is designed to coexist with:
 - local or hosted agent runtimes
 - MCP registries and tool servers
 
-The long-term goal is not to forbid tool-specific configuration. The goal is to stop storing the
-same project meaning in five different places.
+The goal is not to forbid tool-specific configuration. The goal is to stop copying the same project
+meaning into `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, and other runtime-specific places.
+
+Each IDE or runtime may still keep its own sessions and transcripts. That separation is intentional:
+sessions often contain private prompts, credentials pasted by mistake, production data, or customer
+details. APC should expose durable project meaning, not every conversation that happened near the
+project.

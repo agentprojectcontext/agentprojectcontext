@@ -13,21 +13,40 @@ The APC draft standardizes a repository-owned context layer with a canonical `.a
 project-root/
 ├── AGENTS.md                        ← project context: rules, stack, conventions
 └── .apc/
-    ├── project.json                 ← project metadata + apx field
-    ├── .gitignore                   ← safe defaults (created by apx init)
+    ├── project.json                 ← project metadata
+    ├── .gitignore                   ← safe defaults
     ├── agents/
     │   ├── architect.md             ← agent definition (commit this)
     │   ├── architect/
-    │   │   ├── memory.md            ← curated memory (commit if meaningful)
-    │   │   └── sessions/            ← raw session logs (local-only, gitignored)
-    │   └── reviewer/
-    │       ├── memory.md
-    │       └── sessions/
+    │   │   └── memory.md            ← curated project memory only
+    │   └── reviewer.md
     ├── skills/
     │   ├── documentation.md
     │   └── release-checklist.md
     └── mcps.json
 ```
+
+## What does not belong in `.apc/`
+
+APC portable core must not store raw runtime state.
+
+Do not place these paths in `.apc/`:
+
+```text
+.apc/agents/<slug>/sessions/
+.apc/sessions/
+.apc/conversations/
+.apc/messages/
+.apc/chats/
+.apc/project.db
+.apc/cache/
+.apc/tmp/
+.apc/private/
+.apc/secrets/
+```
+
+Runtimes keep those files in their own local storage. For example, APX uses
+`~/.apx/projects/<project-id>/`, while IDE-specific agents use their own local directories.
 
 ## Visibility levels
 
@@ -37,7 +56,7 @@ APC distinguishes five levels of persistence for `.apc/` content:
 |---|---|---|
 | `stable` | Canonical definitions that rarely change | Commit |
 | `project` | Context useful to all contributors | Commit |
-| `local` | Machine-specific runtime history | Gitignore |
+| `local` | Machine-specific runtime history | Keep outside `.apc/` or gitignore |
 | `private` | Secrets, credentials, personal notes | Gitignore + never commit |
 | `ephemeral` | Caches, temp files, build artifacts | Gitignore |
 
@@ -47,41 +66,42 @@ APC distinguishes five levels of persistence for `.apc/` content:
 AGENTS.md
 .apc/project.json
 .apc/agents/<slug>.md          ← agent definitions
-.apc/agents/<slug>/memory.md   ← curated memory (if useful to team)
+.apc/agents/<slug>/memory.md   ← optional curated memory, only if safe for team
 .apc/skills/
-.apc/rules/
 .apc/mcps.json                 ← without secrets
 ```
 
-## What to keep local (never commit by default)
+## What to keep outside APC
 
 ```text
-.apc/agents/<slug>/sessions/   ← raw session logs
-.apc/sessions/
-.apc/chats/
-.apc/cache/
-.apc/tmp/
-.apc/private/
-.apc/secrets/
-.apc/*.local.json
-.apc/*.secret.json
-.apc/*.env
-.apc/migrate.md
+Codex runtime state
+Claude Code runtime state
+OpenCode runtime state
+APX runtime state at ~/.apx/projects/<project-id>/
+local MCP process caches
+tool call transcripts
+raw session logs
+provider conversation threads
 ```
 
 ## Default `.apc/.gitignore`
 
-`apx init` writes this file automatically:
+APC-compatible initializers should write safe defaults. The file should guard against accidental
+runtime state if older tools or manual scripts create it under `.apc/`.
 
 ```gitignore
-# APC runtime data — local-first by default
+# Runtime data must not live in APC. Ignore if created by older tools.
 agents/*/sessions/
+agents/*/conversations/
 sessions/
+conversations/
+messages/
 chats/
 cache/
 tmp/
 private/
 secrets/
+project.db
 *.local.json
 *.secret.json
 *.env
@@ -89,24 +109,26 @@ secrets/
 migrate.md
 ```
 
-If you want to version specific sessions (e.g. curated examples), add explicit exceptions:
+If you want to publish sanitized examples, do not put them in raw session paths. Prefer an explicit
+documentation path:
 
-```gitignore
-agents/*/sessions/
-!agents/*/sessions/published/
+```text
+docs/examples/sessions/
 ```
 
 ## Privacy and version control
 
 **Golden rule:** APC stores durable project knowledge in the repository, not raw private conversations by default.
 
-Raw sessions are local-first and must be ignored by version control unless explicitly exported or curated by the user.
+Raw sessions are runtime-owned and should stay outside `.apc/`. If a user explicitly wants to share
+one, export a sanitized summary into project docs or curated memory.
 
 Agents writing APC-compatible data should never commit private sessions or secrets unless the user explicitly exports sanitized content.
 
 ## Design notes
 
 - `AGENTS.md` is the broad root compatibility contract — readable by Codex, Cursor, and any tool that follows the convention.
-- `.apc/project.json` stores project metadata including the `apx` installation state.
-- `sessions/` directories under agents are always local-first; extract meaningful decisions to `memory.md`.
+- `.apc/project.json` stores stable project metadata.
+- Agent definitions live in `.apc/agents/<slug>.md`; optional curated memory may live in `.apc/agents/<slug>/memory.md`.
+- Sessions, conversations, messages, and runtime databases belong outside `.apc/`.
 - Unknown paths under `.apc/` are ignored by consumers unless a formal APC extension defines them.

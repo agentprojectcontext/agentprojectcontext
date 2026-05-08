@@ -1,7 +1,7 @@
 # Agents
 
 > This file is the contract for agents in this project.
-> It follows the APC spec (https://github.com/apc-spec/apf).
+> It follows Agent Project Context (APC).
 
 <!-- Add an agent like this:
 
