@@ -24,9 +24,7 @@ const config: DocsThemeConfig = {
   nextThemes: {
     defaultTheme: 'system'
   },
-  useNextSeoProps() {
-    return { titleTemplate: '%s – Agent Project Context' }
-  },
+
   head: () => (
     <>
       <title>Agent Project Context</title>
