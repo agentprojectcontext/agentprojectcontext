@@ -1,0 +1,7 @@
+**/.apc/messages/*.jsonl
+**/.apc/agents/*/sessions/*.md
+**/.apc/agents/*/conversations/*.md
+**/.apc/project.db
+**/.apc/project.db-shm
+**/.apc/project.db-wal
+.DS_Store
