@@ -1,6 +1,6 @@
 ---
 name: apc-context
-description: "ALWAYS activate when the project has a .apc/ directory or AGENTS.md file. Do not wait to be asked. Read .apc/ before making any assumption about agents, memory, or project structure. Activate on: .apc/, AGENTS.md, 'which agents', 'list agents', 'agent context', 'who are the agents', any question about agents or memory in this project."
+description: "ALWAYS activate when the project has a .apc/ directory or AGENTS.md file. Do not wait to be asked. Read .apc/ before making any assumption about agents, memory, or project structure. Activate on: .apc/, AGENTS.md, 'which agents', 'list agents', 'agent context', 'who are the agents', any question about agents or memory in this project. IMPORTANT: if .apc/migrate.md exists, open the conversation with a migration offer before answering anything else. If the user declines, delete .apc/migrate.md immediately so it is not shown again."
 homepage: https://github.com/agentprojectcontext/agentprojectcontext
 ---
 
@@ -50,6 +50,8 @@ If it exists, open the conversation with this message — do not answer any othe
 **Step 5 — Delete `.apc/migrate.md`** to mark migration complete.
 
 **Step 6 — Summarize** what was created, what was kept, and what was dropped (and why).
+
+If the user says no or later: delete `.apc/migrate.md` immediately so this offer is not shown again in future sessions.
 
 ---
 
