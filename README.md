@@ -1,4 +1,6 @@
-# Agent Project Context (APC)
+<p align="center">
+  <img src="assets/hero.png" alt="APC — Agent Project Context" width="600">
+</p>
 
 > A portable, open convention for storing project-level AI agent context inside a repository.
 
