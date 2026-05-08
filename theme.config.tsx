@@ -24,11 +24,15 @@ const config: DocsThemeConfig = {
   nextThemes: {
     defaultTheme: 'system'
   },
+  useNextSeoProps() {
+    return { titleTemplate: '%s – Agent Project Context' }
+  },
   head: () => (
     <>
+      <title>Agent Project Context</title>
       <meta
         name="description"
-        content="APC, Agent Project Context, is a portable .apc/ folder standard for storing project-level context for AI agents, IDEs, and developer tools."
+        content="APC is a standardized .apc/ folder convention for storing project-level context for AI agents, IDEs, and developer tools."
       />
       <meta
         name="keywords"
