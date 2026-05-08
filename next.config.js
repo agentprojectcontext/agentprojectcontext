@@ -6,9 +6,11 @@ const withNextra = require('nextra').default({
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true'
 const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] || ''
 const isUserOrOrgPagesRepo = repoName.endsWith('.github.io')
+const hasCname = (() => { try { require('fs').readFileSync('./public/CNAME'); return true } catch { return false } })()
 const computedBasePath =
-  process.env.NEXT_PUBLIC_BASE_PATH ||
-  (isGithubActions && repoName && !isUserOrOrgPagesRepo ? `/${repoName}` : '')
+  process.env.NEXT_PUBLIC_BASE_PATH !== undefined
+    ? process.env.NEXT_PUBLIC_BASE_PATH
+    : (hasCname ? '' : (isGithubActions && repoName && !isUserOrOrgPagesRepo ? `/${repoName}` : ''))
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
