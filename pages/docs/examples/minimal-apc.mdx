@@ -1,0 +1,57 @@
+---
+title: Minimal APC Example
+description: A compact example of an APC-compatible repository layout.
+---
+
+# Minimal APC Example
+
+```text
+my-project/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── skills/
+    │   └── documentation.md
+    └── agents/
+        └── architect/
+            └── memory.md
+```
+
+## `AGENTS.md`
+
+```markdown
+# Agents
+
+## architect
+- **Role**: System design
+- **Model**: claude-sonnet-4-6
+- **Skills**: documentation
+```
+
+## `.apc/project.json`
+
+```json
+{
+  "name": "my-project",
+  "version": "0.1.0",
+  "apf": "0.1.0",
+  "created": "2026-05-08T00:00:00Z"
+}
+```
+
+## `.apc/skills/documentation.md`
+
+```markdown
+# documentation
+
+Write concise technical docs with explicit scope and terminology.
+```
+
+## `.apc/agents/architect/memory.md`
+
+```markdown
+# Memory — architect
+
+## Identity
+- Owns system structure and migration safety
+```

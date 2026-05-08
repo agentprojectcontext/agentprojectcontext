@@ -1,0 +1,51 @@
+---
+title: APC vs MCP
+description: APC and MCP solve different layers of the agent tooling stack.
+---
+
+# APC vs MCP
+
+APC and MCP are complementary, not competing.
+
+## Different layers
+
+| Layer | APC | MCP |
+| --- | --- | --- |
+| Primary concern | Project-owned context | External tool connectivity |
+| Typical contents | agents, skills, memory, metadata | tools, transports, schemas, requests |
+| Where it lives | repository filesystem | servers and client integrations |
+| Main question | “What context does this project expose?” | “What tools can this agent call?” |
+
+## APC
+
+APC standardizes durable project context inside the repository.
+
+Typical APC concerns:
+
+- persistent agent identity
+- project-local instructions
+- role definitions
+- memory files
+- project-level MCP hints
+
+## MCP
+
+MCP standardizes connections between AI systems and external tools or services.
+
+Typical MCP concerns:
+
+- tool registration
+- transports
+- request and response schemas
+- remote capability discovery
+
+## Working together
+
+An APC project may include `.apc/mcps.json` to declare project-owned MCP expectations. That does
+not replace MCP. It gives compatible tools a local place to discover which MCP servers matter to
+the project.
+
+## Practical summary
+
+- Use **APC** to describe the project.
+- Use **MCP** to reach tools outside the model.

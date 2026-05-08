@@ -1,0 +1,48 @@
+---
+title: Global vs Project Context
+description: APC distinguishes project-owned context from user-global or runtime-global context.
+---
+
+# Global vs Project Context
+
+Not all agent context belongs in the repository.
+
+APC is specifically for project-level context. It should stay distinct from user-global or
+runtime-global state.
+
+## Project context
+
+Project context travels with the repository.
+
+Examples:
+
+- project metadata
+- agent roles
+- reusable skills
+- durable memory tied to the project
+- project-specific MCP hints
+
+## Global context
+
+Global context belongs to a user account, workstation, or runtime installation.
+
+Examples:
+
+- personal writing preferences across all projects
+- machine-local API keys
+- globally installed tools
+- editor UI choices
+- personal aliases unrelated to one repository
+
+## Why separation helps
+
+If global and project context mix freely:
+
+- repositories become less portable
+- secrets leak more easily
+- contributors cannot tell what is shared
+- tool behavior becomes harder to reproduce
+
+APC encourages a simple rule:
+
+> If another contributor cloning the repository should inherit it, it probably belongs in APC.

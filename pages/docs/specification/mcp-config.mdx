@@ -1,0 +1,40 @@
+---
+title: MCP Config
+description: APC can include project-owned MCP configuration hints without replacing the MCP protocol itself.
+---
+
+# MCP Config
+
+APC may include project-owned MCP configuration hints.
+
+## Canonical file
+
+```text
+.apc/mcps.json
+```
+
+## Purpose
+
+This file gives the project one local place to describe expected MCP servers in a way compatible
+tools can read.
+
+It does **not** replace MCP. It complements MCP.
+
+## Example
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}
+```
+
+## Why keep it in APC
+
+Without a project-owned MCP hint file, teams often duplicate MCP setup across editor-specific
+locations. Putting the project expectation in `.apc/mcps.json` reduces drift while preserving MCP
+as the external tool protocol.

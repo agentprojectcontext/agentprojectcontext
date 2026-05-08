@@ -1,0 +1,59 @@
+---
+title: Migrate from IDE-Specific Context
+description: Move duplicated agent context out of tool-specific folders into a shared APC layer.
+---
+
+# Migrate from IDE-Specific Context
+
+The most common APC adoption path is migration from fragmented editor-specific state.
+
+## Typical starting point
+
+A project may already have context spread across:
+
+- `.claude/`
+- `.cursor/`
+- `.windsurf/`
+- `.codex/`
+- `.opencode/`
+
+## Migration strategy
+
+### 1. Inventory durable context
+
+Separate project-owned meaning from runtime-local preferences.
+
+Project-owned:
+
+- agent roles
+- stable instructions
+- reusable workflows
+- durable memory
+
+Runtime-local:
+
+- API keys
+- personal aliases
+- UI preferences
+- machine-local paths
+
+### 2. Consolidate root agent definitions
+
+Move shared agent definitions into `AGENTS.md`.
+
+### 3. Extract reusable instructions
+
+Move repeated instruction blocks into `.apc/skills/`.
+
+### 4. Create durable memory files
+
+Move long-lived facts from chat history or hidden runtime stores into `.apc/agents/<slug>/memory.md`.
+
+### 5. Add MCP hints only if they are project-owned
+
+If the project expects certain MCP servers, document them in `.apc/mcps.json`.
+
+## Keep tool-specific files where needed
+
+APC does not require deleting every tool-specific folder. The goal is to stop duplicating the same
+project meaning across all of them.

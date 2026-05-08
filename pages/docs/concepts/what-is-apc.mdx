@@ -1,0 +1,50 @@
+---
+title: What Is APC?
+description: APC defines a portable .apc/ folder convention for agent-readable project context.
+---
+
+# What Is APC?
+
+APC is a filesystem convention for project-level agent context.
+
+Its purpose is to let a repository declare context that multiple tools can share without rewriting
+or rediscovering it for each environment.
+
+## APC is about the project
+
+APC models the idea that some context belongs to the project itself, not only to the current
+runtime or editor. Examples include:
+
+- which agents exist
+- what those agents are responsible for
+- which reusable skills the project defines
+- which long-lived facts should persist
+- which MCP endpoints the project expects to use
+
+## APC is not a runtime
+
+APC does not specify:
+
+- a daemon process
+- a CLI
+- a database engine
+- a vendor-specific integration
+- a hosted service
+
+A runtime may consume APC, extend it, cache it, or project it into another interface, but APC
+itself remains the portable layer.
+
+## Canonical example
+
+```text
+MyProject/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    └── mcps.json
+```
+
+The exact portable core is intentionally small. APC values stability and clarity over feature
+volume.

@@ -1,0 +1,52 @@
+---
+title: Memory
+description: APC memory files let projects preserve durable agent-specific context in plain text.
+---
+
+# Memory
+
+Memory in APC is durable context tied to a project agent.
+
+## Location
+
+```text
+.apc/agents/<slug>/memory.md
+```
+
+## Why markdown
+
+APC keeps memory human-readable by default:
+
+- easy to review
+- easy to diff
+- easy to migrate
+- not trapped in one runtime database
+
+## Recommended shape
+
+```markdown
+# Memory — reviewer
+
+## Identity
+- Reviews behavior changes and risks
+
+## Long-term facts
+- Prefer findings-first reviews
+
+## Recent context
+- Tracking docs migration for APC
+```
+
+## Scope guidance
+
+Good APC memory usually contains information that remains useful across sessions and across tools.
+
+Examples:
+
+- stable project responsibilities
+- recurring constraints
+- long-lived domain facts
+- durable team expectations
+
+Transient scratch notes usually belong elsewhere unless the project intentionally wants to persist
+them.

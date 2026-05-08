@@ -1,0 +1,50 @@
+---
+title: Introduction
+description: APC is a portable convention for storing project-level context for AI agents, IDEs, and developer tools.
+---
+
+# Introduction
+
+APC, Agent Project Context, is a portable convention for storing agent-readable project context
+inside a repository.
+
+APC focuses on one layer:
+
+- what context a project owns
+- where that context lives
+- how compatible tools can discover and interpret it
+
+APC does not define how a runtime executes an agent. It defines how a project exposes durable
+context to many possible runtimes and tools.
+
+## Goals
+
+- reduce duplicated context across IDE-specific folders
+- keep durable context close to the codebase
+- make context inspectable, reviewable, and versionable
+- provide a neutral layer for agents, IDEs, and developer automation
+
+## Canonical directory
+
+The APC idea begins as a generic shared context folder. In the current draft, the canonical name is
+`/.apc/`.
+
+Typical APC content includes:
+
+- project metadata
+- agent definitions
+- skills
+- memory
+- optional MCP configuration hints
+
+## Relationship to existing tooling
+
+APC is designed to coexist with:
+
+- `AGENTS.md`
+- IDE-specific folders
+- local or hosted agent runtimes
+- MCP registries and tool servers
+
+The long-term goal is not to forbid tool-specific configuration. The goal is to stop storing the
+same project meaning in five different places.

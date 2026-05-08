@@ -1,0 +1,57 @@
+---
+title: Agents
+description: APC uses AGENTS.md as the repository root contract and may also use structured per-agent definition files.
+---
+
+# Agents
+
+APC builds on `AGENTS.md` as the root compatibility contract for agent discovery.
+
+## Root contract
+
+At the repository root:
+
+```text
+AGENTS.md
+```
+
+Typical structure:
+
+```markdown
+# Agents
+
+## architect
+- **Role**: System design
+- **Model**: claude-sonnet-4-6
+- **Skills**: documentation, release-checklist
+- **Description**: Defines architecture and migration strategy.
+```
+
+## Structured per-agent files
+
+APC may also use structured files:
+
+```text
+.apc/agents/<slug>.md
+```
+
+Example:
+
+```markdown
+---
+role: System design
+model: claude-sonnet-4-6
+skills: documentation, release-checklist
+description: Defines architecture and migration strategy.
+---
+
+Prioritize durable interfaces and migration safety.
+```
+
+## Why both can exist
+
+- `AGENTS.md` is broad compatibility surface
+- `.apc/agents/<slug>.md` is structured project-owned detail
+
+When both describe the same slug, compatible consumers may treat the structured file as the more
+authoritative machine-readable definition while retaining `AGENTS.md` as the root discovery layer.

@@ -1,0 +1,40 @@
+---
+title: Rules
+description: Rules are a common project need, but a shared .apc/rules/ directory is not part of the APC portable core in v0.1.
+---
+
+# Rules
+
+Many projects need explicit rules. APC recognizes that need, but the portable core deliberately
+keeps rule storage conservative in v0.1.
+
+## Current APC position
+
+A shared `.apc/rules/` directory is **not** part of the APC portable core in the current draft.
+
+Why:
+
+- projects model rules differently
+- some rules belong in `AGENTS.md`
+- some rules fit better as reusable skills
+- some rules are implementation-specific rather than protocol-level
+
+## Recommended current approach
+
+Until APC standardizes a dedicated rules extension, projects should place rules in one of these
+locations based on intent:
+
+- `AGENTS.md` for root agent contract constraints
+- `.apc/skills/` for reusable rule bundles
+- repository docs for broader human governance
+
+## Future direction
+
+APC may later define a dedicated rules extension, but it should only happen once the boundary
+between:
+
+- project contract
+- skill content
+- implementation-specific policy
+
+is clearer.

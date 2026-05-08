@@ -1,0 +1,76 @@
+---
+title: Create Your First APC Project
+description: A practical walkthrough for creating a minimal APC-compatible repository structure.
+---
+
+# Create Your First APC Project
+
+This guide shows a minimal APC-compatible repository layout.
+
+## 1. Create the root contract
+
+Create `AGENTS.md` at the repository root:
+
+```markdown
+# Agents
+
+## architect
+- **Role**: System design
+- **Model**: claude-sonnet-4-6
+- **Skills**: documentation
+- **Description**: Defines architecture and migration strategy.
+```
+
+## 2. Create the APC directory
+
+```text
+.apc/
+```
+
+## 3. Add project metadata
+
+Create `.apc/project.json`:
+
+```json
+{
+  "name": "My Project",
+  "version": "0.1.0",
+  "apf": "0.1.0",
+  "created": "2026-05-08T00:00:00Z"
+}
+```
+
+## 4. Add at least one skill
+
+Create `.apc/skills/documentation.md`:
+
+```markdown
+# documentation
+
+Write protocol and specification text in a neutral, technical tone.
+```
+
+## 5. Add memory if needed
+
+Create `.apc/agents/architect/memory.md`:
+
+```markdown
+# Memory — architect
+
+## Identity
+- Owns architecture and specification clarity
+```
+
+## 6. Add structured agent files if your tools support them
+
+Optional:
+
+```text
+.apc/agents/architect.md
+```
+
+This gives compatible tools a stable machine-readable location for richer agent metadata.
+
+## Result
+
+You now have a portable project context layer that can travel with the repository.

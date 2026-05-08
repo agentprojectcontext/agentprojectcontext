@@ -1,0 +1,44 @@
+---
+title: Folder Structure
+description: The canonical APC draft uses a root AGENTS.md file and a .apc directory for project-owned context.
+---
+
+# Folder Structure
+
+The APC draft standardizes a repository-owned context layer with a canonical `.apc/` directory.
+
+## Canonical draft layout
+
+```text
+project-root/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── agents/
+    │   ├── architect.md
+    │   ├── reviewer.md
+    │   ├── architect/
+    │   │   ├── memory.md
+    │   │   └── sessions/
+    │   └── reviewer/
+    │       ├── memory.md
+    │       └── sessions/
+    ├── skills/
+    │   ├── documentation.md
+    │   └── release-checklist.md
+    └── mcps.json
+```
+
+## Design notes
+
+- `AGENTS.md` is the broad root compatibility contract.
+- `.apc/project.json` stores project metadata.
+- `.apc/agents/<slug>.md` stores structured per-agent definitions when used.
+- `.apc/agents/<slug>/memory.md` stores durable memory.
+- `.apc/skills/` stores reusable project instructions.
+- `.apc/mcps.json` stores optional project-owned MCP hints.
+
+## Unknown paths
+
+Consumers should ignore unknown paths unless another APC extension formally defines them. This
+keeps the portable core small while allowing implementations to evolve.
