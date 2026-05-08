@@ -9,23 +9,11 @@ const docsRepositoryBase =
 
 const config: DocsThemeConfig = {
   logo: (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', fontWeight: 700 }}>
-      <span
-        aria-hidden="true"
-        style={{
-          display: 'inline-grid',
-          placeItems: 'center',
-          width: '1.8rem',
-          height: '1.8rem',
-          borderRadius: '0.6rem',
-          background:
-            'linear-gradient(135deg, rgba(32,118,255,0.16), rgba(12,184,139,0.22))',
-          border: '1px solid rgba(32,118,255,0.2)'
-        }}
-      >
-        APC
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem' }}>
+      <img src="/favicon.svg" alt="" aria-hidden="true" style={{ height: '1.75rem', width: '1.75rem' }} />
+      <span style={{ fontWeight: 600, fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
+        Agent Project Context
       </span>
-      <span>Agent Project Context</span>
     </span>
   ),
   project: {
