@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Folder shape: tab at top-left, rounded corners throughout -->
+  <path
+    d="M 148,68
+       L 296,68
+       Q 356,68 364,128
+       Q 372,196 432,196
+       L 876,196
+       Q 956,196 956,276
+       L 956,876
+       Q 956,956 876,956
+       L 148,956
+       Q 68,956 68,876
+       L 68,148
+       Q 68,68 148,68
+       Z"
+    fill="none"
+    stroke="white"
+    stroke-width="42"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+
+  <!-- Three connected nodes inside folder -->
+  <!-- Top node -->
+  <circle cx="512" cy="350" r="68" fill="none" stroke="white" stroke-width="42"/>
+
+  <!-- Bottom-left node -->
+  <circle cx="300" cy="710" r="68" fill="none" stroke="white" stroke-width="42"/>
+
+  <!-- Bottom-right node -->
+  <circle cx="724" cy="710" r="68" fill="none" stroke="white" stroke-width="42"/>
+
+  <!-- Arc: Top to Bottom-Left (inward curve) -->
+  <path
+    d="M 484,404  Q 462,558 336,652"
+    fill="none" stroke="white" stroke-width="42" stroke-linecap="round"
+  />
+
+  <!-- Arc: Bottom-Left to Bottom-Right (inward curve upward) -->
+  <path
+    d="M 368,710  Q 512,648 656,710"
+    fill="none" stroke="white" stroke-width="42" stroke-linecap="round"
+  />
+
+  <!-- Arc: Bottom-Right to Top (inward curve) -->
+  <path
+    d="M 700,652  Q 562,558 540,404"
+    fill="none" stroke="white" stroke-width="42" stroke-linecap="round"
+  />
+</svg>
