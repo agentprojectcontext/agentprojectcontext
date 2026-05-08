@@ -5,7 +5,7 @@ const repositoryUrl =
   process.env.NEXT_PUBLIC_GITHUB_REPO || 'https://github.com/your-org/apc'
 
 const docsRepositoryBase =
-  process.env.NEXT_PUBLIC_DOCS_REPO_BASE || `${repositoryUrl}/tree/main/pages`
+  process.env.NEXT_PUBLIC_DOCS_REPO_BASE || `${repositoryUrl}/tree/main/src/pages`
 
 const config: DocsThemeConfig = {
   logo: (

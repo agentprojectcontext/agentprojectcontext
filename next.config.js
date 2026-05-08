@@ -1,6 +1,6 @@
 const withNextra = require('nextra').default({
   theme: 'nextra-theme-docs',
-  themeConfig: './theme.config.tsx'
+  themeConfig: './src/theme.config.tsx'
 })
 
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true'

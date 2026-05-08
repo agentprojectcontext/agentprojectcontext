@@ -64,19 +64,32 @@ Consumers SHOULD detect the nearest ancestor directory matching those conditions
 
 ## 6. Canonical layout
 
+APC separates two concerns with two distinct locations:
+
+- **Project context** (`.apc/`) — portable, committable, shared with the repo
+- **Runtime state** (`~/.apx/projects/<project-id>/`) — local, private, never committed
+
 ```text
 project-root/
 ├── AGENTS.md
 └── .apc/
-    ├── project.json
+    ├── project.json       ← includes a stable "id" field
     ├── agents/
-    │   ├── <slug>.md
-    │   └── <slug>/
-    │       ├── memory.md
-    │       └── sessions/
+    │   └── <slug>.md      ← definition only (role, model, skills…)
     ├── skills/
     │   └── <name>.md
     └── mcps.json
+```
+
+Runtime state lives on the local machine, keyed by the project id:
+
+```text
+~/.apx/projects/<project-id>/
+└── agents/
+    └── <slug>/
+        ├── memory.md
+        ├── sessions/
+        └── conversations/
 ```
 
 ### 6.1 Required paths
@@ -84,17 +97,26 @@ project-root/
 | Path | Required | Purpose |
 |---|---|---|
 | `AGENTS.md` | yes | Root compatibility contract |
-| `.apc/project.json` | yes | Project metadata and APC version targeting |
+| `.apc/project.json` | yes | Project metadata, APC version, and stable project id |
 
-### 6.2 Optional standardized paths
+### 6.2 Optional standardized paths — project context
 
 | Path | Required | Purpose |
 |---|---|---|
 | `.apc/agents/<slug>.md` | no | Structured per-agent definition |
-| `.apc/agents/<slug>/memory.md` | no | Durable agent memory |
-| `.apc/agents/<slug>/sessions/` | no | Session or task records |
 | `.apc/skills/<name>.md` | no | Reusable project instructions |
 | `.apc/mcps.json` | no | Project-owned MCP registry hints |
+
+### 6.3 Runtime state paths — local machine only
+
+| Path | Purpose |
+|---|---|
+| `~/.apx/projects/<project-id>/agents/<slug>/memory.md` | Durable agent memory |
+| `~/.apx/projects/<project-id>/agents/<slug>/sessions/` | Session or task records |
+| `~/.apx/projects/<project-id>/agents/<slug>/conversations/` | LLM conversation threads |
+| `~/.apx/projects/<project-id>/project.db` | Regenerable SQLite cache |
+
+These paths MUST NOT be committed to source control. Consumers MUST NOT write runtime state into `.apc/`.
 
 Consumers MUST ignore unknown files and directories inside `.apc/` unless another APC extension standard defines them.
 
@@ -179,6 +201,7 @@ Minimal example:
 
 ```json
 {
+  "id": "my-project-a1b2c3d4",
   "name": "My Project",
   "version": "0.1.0",
   "apf": "0.1.0",
@@ -190,9 +213,12 @@ Minimal example:
 
 | Key | Type | Description |
 |---|---|---|
+| `id` | string | Stable project identifier used to key `~/.apx/projects/<id>/` |
 | `name` | string | Human-readable project name |
 | `version` | string | Project version |
 | `created` | string | ISO-8601 creation timestamp |
+
+The `id` MUST be stable across moves and renames. It SHOULD be generated once at `apx init` time as a slug of the project name plus a short random suffix (e.g. `my-project-a1b2c3d4`) and MUST NOT be changed after the first commit.
 
 ### 10.2 APC version key
 
@@ -207,11 +233,13 @@ The current reference implementation writes `apf` for historical reasons. Future
 
 ## 11. Agent memory
 
-Durable agent memory, when present, lives at:
+Durable agent memory lives on the local machine at:
 
 ```text
-.apc/agents/<slug>/memory.md
+~/.apx/projects/<project-id>/agents/<slug>/memory.md
 ```
+
+This file MUST NOT be placed inside `.apc/` or committed to source control. It may contain sensitive runtime content such as conversation summaries, user data, or API responses.
 
 APC v0.1 does not impose a required internal schema for this file. It is intentionally markdown-first and consumer-defined.
 
@@ -230,13 +258,25 @@ Recommended structure:
 - Tracking release doc migration
 ```
 
-## 12. Sessions
+### 11.1 Default agent
 
-Task or session records, when present, live under:
+When no named agent is active — for example, when an agent runtime is invoked without specifying a role — consumers SHOULD use the slug `default`:
 
 ```text
-.apc/agents/<slug>/sessions/
+~/.apx/projects/<project-id>/agents/default/memory.md
 ```
+
+The `default` agent is never declared in `AGENTS.md`. It is an implicit fallback for unrouted context.
+
+## 12. Sessions
+
+Task or session records live on the local machine under:
+
+```text
+~/.apx/projects/<project-id>/agents/<slug>/sessions/
+```
+
+These files MUST NOT be placed inside `.apc/` or committed to source control.
 
 ### 12.1 Filename format
 
@@ -350,25 +390,40 @@ Implementations MAY use such files, but they are not part of the APC portable co
 
 ## 18. Example APC project
 
+Project context — committed to the repository:
+
 ```text
 MyProject/
 ├── AGENTS.md
 ├── .apc/
-│   ├── project.json
+│   ├── project.json        ← includes "id": "myproject-a1b2c3d4"
 │   ├── agents/
-│   │   ├── architect.md
-│   │   ├── reviewer.md
-│   │   ├── architect/
-│   │   │   ├── memory.md
-│   │   │   └── sessions/
-│   │   └── reviewer/
-│   │       ├── memory.md
-│   │       └── sessions/
+│   │   ├── architect.md    ← definition only
+│   │   └── reviewer.md     ← definition only
 │   ├── skills/
 │   │   ├── documentation.md
 │   │   └── release-checklist.md
 │   └── mcps.json
 └── src/
+```
+
+Runtime state — local machine only, never committed:
+
+```text
+~/.apx/projects/myproject-a1b2c3d4/
+├── project.db
+└── agents/
+    ├── architect/
+    │   ├── memory.md
+    │   ├── sessions/
+    │   └── conversations/
+    ├── reviewer/
+    │   ├── memory.md
+    │   ├── sessions/
+    │   └── conversations/
+    └── default/            ← implicit fallback when no role is active
+        ├── memory.md
+        └── sessions/
 ```
 
 ## 19. Versioning

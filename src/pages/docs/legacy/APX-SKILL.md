@@ -16,14 +16,24 @@ description: Detect and operate APC (Agent Project Framework) projects from any 
 
 ## What is APC
 
-APC is a portable protocol for AI-agent projects. A project is a directory that contains:
+APC is a portable protocol for AI-agent projects. It separates two concerns:
+
+**Project context** — committed to the repository:
 
 - `AGENTS.md` — declares the agents (one H2 per agent, slug as title, fields as `- **Field**: value` bullets)
-- `.apc/project.json` — project metadata
-- `.apc/agents/<slug>/memory.md` — persistent memory per agent
-- `.apc/agents/<slug>/sessions/` — session logs (one markdown file per session, ISO-8601 prefixed)
+- `.apc/project.json` — project metadata including a stable `id`
+- `.apc/agents/<slug>.md` — per-agent definition (role, model, skills)
 - `.apc/skills/` — reusable skills referenced by agents
-- `.apc/mcps/` — per-project MCP server registry
+- `.apc/mcps.json` — per-project MCP server registry
+
+**Runtime state** — local machine only, never committed:
+
+- `~/.apx/projects/<project-id>/agents/<slug>/memory.md` — persistent memory per agent
+- `~/.apx/projects/<project-id>/agents/<slug>/sessions/` — session logs (one markdown file per session, ISO-8601 prefixed)
+- `~/.apx/projects/<project-id>/agents/<slug>/conversations/` — LLM conversation threads
+- `~/.apx/projects/<project-id>/project.db` — regenerable SQLite cache
+
+If no named agent role is active, runtime state is keyed under the `default` slug.
 
 A local background daemon (`apx`) on `http://localhost:7430` exposes all of the above as a REST API and proxies MCP calls.
 
@@ -76,10 +86,11 @@ If you are running inside Claude Code, Codex, OpenCode, or any other CLI agent t
 
 ```bash
 # Claude Code: session path is typically ~/.claude/projects/<encoded-cwd>/<session-id>.jsonl
-echo "$CLAUDE_SESSION_PATH" >> .apc/agents/<your-slug>/sessions/$(date -u +%Y-%m-%d)-claude-handoff.md
+apx session new <slug> --title "Working session — Claude Code" \
+  --body "External transcript: $CLAUDE_SESSION_PATH"
 ```
 
-Or just mention the path in your APC session log when you create it:
+Or mention the path explicitly:
 
 ```bash
 apx session new <slug> --title "Working session — Claude Code" --body "External transcript: ~/.claude/projects/.../session-<id>.jsonl"
@@ -114,10 +125,11 @@ If `apx` commands fail with `ECONNREFUSED 127.0.0.1:7430`, run `apx daemon start
 
 ## What NOT to do
 
-- Don't write to `.apc/agents/<slug>/memory.md` with `Edit`/`Write` directly. Use `apx memory`.
+- Don't write to `~/.apx/projects/<id>/agents/<slug>/memory.md` with `Edit`/`Write` directly. Use `apx memory`.
 - Don't add agents by editing `AGENTS.md` by hand. Use `apx agent add`.
 - Don't shell out to MCPs directly with `npx`/`uvx`. Use `apx mcp run` so the daemon manages process lifecycle.
 - Don't store secrets (Telegram tokens, API keys) in the project tree. They live in `~/.apx/config.json`.
+- Don't write memory, sessions, conversations, or `project.db` into `.apc/`. Those paths are private runtime state and must stay in `~/.apx/`.
 ```
 
 ---

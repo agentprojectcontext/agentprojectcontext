@@ -4,5 +4,6 @@ export default {
   specification: 'Specification',
   guides: 'Guides',
   examples: 'Examples',
-  reference: 'Reference'
+  reference: 'Reference',
+  legacy: 'Legacy'
 }

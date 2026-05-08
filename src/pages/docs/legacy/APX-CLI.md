@@ -19,7 +19,7 @@ apx --version
 
 ### `apx init [path] [--name <name>]`
 
-Initialize a new APC project at `path` (default: `.`). Creates `AGENTS.md`, `.apc/project.json`, and an empty SQLite cache.
+Initialize a new APC project at `path` (default: `.`). Creates `AGENTS.md`, `.apc/project.json` (with a generated stable `id`), and the runtime state directory at `~/.apx/projects/<id>/`.
 
 ```bash
 apx init --name "My Agency"
@@ -44,7 +44,7 @@ De-register (does not delete files).
 
 ### `apx project rebuild [<path|id>]`
 
-Rebuild SQLite cache from filesystem. Run after a manual `git pull` or batch edits.
+Rebuild SQLite cache from filesystem. Run after a manual `git pull` or batch edits to `~/.apx/projects/<id>/`.
 
 ```bash
 apx project rebuild               # rebuild current project (cwd auto-detected)
@@ -96,7 +96,7 @@ Tail the daemon log at `~/.apx/daemon.log`.
 
 ### `apx agent add <slug> [--role R] [--model M] [--skills a,b,c] [--language es-AR]`
 
-Append a new agent to `AGENTS.md` and create its `.apc/agents/<slug>/` directory.
+Append a new agent to `AGENTS.md`, create `.apc/agents/<slug>.md`, and initialize its runtime directory at `~/.apx/projects/<project-id>/agents/<slug>/`.
 
 ```bash
 apx agent add sofia --role Support --model claude-haiku-4-5 --skills customer-support
@@ -116,15 +116,22 @@ Print the parsed agent block + memory snapshot.
 
 ### `apx agent remove <slug>`
 
-Delete the H2 block from `AGENTS.md` and (with `--purge`) the `.apc/agents/<slug>/` tree.
+Delete the H2 block from `AGENTS.md` and the `.apc/agents/<slug>.md` definition file. With `--purge`, also removes the runtime directory at `~/.apx/projects/<project-id>/agents/<slug>/`.
 
 ---
 
 ## 4. Memory
 
+Memory files live at `~/.apx/projects/<project-id>/agents/<slug>/memory.md` — never inside `.apc/`. If no agent slug is active, `default` is used automatically.
+
 ### `apx memory <slug>`
 
-Print the full `memory.md` of an agent.
+Print the memory of an agent. Use `default` when no role is active.
+
+```bash
+apx memory sofia
+apx memory default
+```
 
 ### `apx memory <slug> --edit`
 
@@ -146,7 +153,7 @@ cat new_memory.md | apx memory sofia --replace -
 
 ## 5. Sessions
 
-Sessions are markdown files with YAML frontmatter. IDs are `YYYY-MM-DD-NN` (auto-incremented per agent per day). See [APC-SPEC.md](APC-SPEC.md#12-sessions) for the APC-side session format.
+Sessions are markdown files with YAML frontmatter stored at `~/.apx/projects/<project-id>/agents/<slug>/sessions/`. IDs are `YYYY-MM-DD-NN` (auto-incremented per agent per day). If no agent slug is active, sessions go under `default`. See [APC-SPEC.md](APC-SPEC.md#12-sessions) for the session format.
 
 ### `apx session list [<slug>] [--last N]`
 
@@ -310,7 +317,7 @@ Opens an interactive REPL against the MCP. Useful for exploring tools.
 
 ## 8. LLM engines (v0.2)
 
-APX can talk directly to LLM providers and persist the resulting conversation as an append-only markdown file under `.apc/agents/<slug>/conversations/YYYY-MM-DD-NN.md`. Five engines are supported: **anthropic**, **openai**, **ollama**, **gemini**, **mock** (offline echo).
+APX can talk directly to LLM providers and persist the resulting conversation as an append-only markdown file under `~/.apx/projects/<project-id>/agents/<slug>/conversations/YYYY-MM-DD-NN.md`. Five engines are supported: **anthropic**, **openai**, **ollama**, **gemini**, **mock** (offline echo).
 
 The model id of an agent (`agents.<slug>.Model`) determines the engine. Explicit form: `ollama:llama3.2`, `anthropic:claude-haiku-4-5`. Implicit: `claude-*` → anthropic, `gpt-*`/`o1-*` → openai, `gemini-*` → gemini.
 
@@ -594,7 +601,7 @@ apx telegram setup
 apx daemon start
 
 # Agent (or you) calls a tool from anywhere
-apx mcp run filesystem list_directory '{"path":"./.apc/agents"}'
+apx mcp run filesystem list_directory '{"path":"./.apc"}'
 
 # Log what happened
 apx session new sofia --title "Onboarded ACME Corp" --body "Customer asked about plan Team..."

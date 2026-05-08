@@ -89,24 +89,41 @@ APC should coexist with AGENTS.md, MCP, runtime metadata, and project documentat
 
 ## 6. Canonical APC layout
 
+APC cleanly separates two kinds of data:
+
+| Kind | Location | Committed to git? |
+|---|---|---|
+| **Project context** — agent definitions, skills, MCP hints | `.apc/` inside the repo | Yes |
+| **Runtime state** — memory, sessions, conversation threads | `~/.apx/projects/<id>/` on the local machine | No |
+
+Project context (lives in the repo):
+
 ```text
 project-root/
 ├── AGENTS.md
 └── .apc/
-    ├── project.json
+    ├── project.json       ← includes stable "id" field
     ├── agents/
-    │   ├── architect.md
-    │   ├── reviewer.md
-    │   ├── architect/
-    │   │   ├── memory.md
-    │   │   └── sessions/
-    │   └── reviewer/
-    │       ├── memory.md
-    │       └── sessions/
+    │   ├── architect.md   ← definition only (role, model, skills…)
+    │   └── reviewer.md
     ├── skills/
     │   ├── documentation.md
     │   └── release-checklist.md
     └── mcps.json
+```
+
+Runtime state (local machine only, never committed):
+
+```text
+~/.apx/projects/<project-id>/
+├── project.db
+└── agents/
+    ├── architect/
+    │   ├── memory.md
+    │   └── sessions/
+    └── reviewer/
+        ├── memory.md
+        └── sessions/
 ```
 
 This layout reflects the current draft and the reference implementation in this repository.
@@ -125,13 +142,13 @@ Project metadata and APC version targeting information.
 
 Structured per-agent definition files. These are useful when tools need a stable machine-readable source beyond the root markdown contract.
 
-### `.apc/agents/<slug>/memory.md`
+### `~/.apx/projects/<id>/agents/<slug>/memory.md`
 
-Durable memory for one agent. APC intentionally keeps the contents flexible.
+Durable memory for one agent. Lives on the local machine — never in the repo. APC intentionally keeps the contents flexible.
 
-### `.apc/agents/<slug>/sessions/`
+### `~/.apx/projects/<id>/agents/<slug>/sessions/`
 
-Task or session records. These make work history project-owned rather than runtime-owned.
+Task or session records. Local-only. Keeping them outside the repo prevents accidental exposure of conversation history or sensitive output.
 
 ### `.apc/skills/<name>.md`
 
@@ -164,33 +181,46 @@ An APC project may still contain tool-specific folders. APC does not forbid them
 
 The recommended direction is:
 
-- keep project-owned context in `.apc/`
-- keep runtime-only or editor-only preferences in their own folders
-- avoid duplicating the same semantic instructions across both whenever possible
+- keep project-owned **definitions** (agents, skills, MCPs) in `.apc/`
+- keep **runtime state** (memory, sessions, conversations, databases) in `~/.apx/projects/<id>/`
+- keep editor-only preferences (`.cursor/`, `.vscode/`) in their own folders
+- avoid duplicating the same semantic instructions across multiple locations
 
-This keeps the project's long-lived context separate from the current execution environment.
+This boundary keeps the project's long-lived, shareable context cleanly separated from local runtime state that should never be committed.
 
 ## 10. Example
+
+Project context — committed to the repo:
 
 ```text
 MyProject/
 ├── AGENTS.md
 ├── .apc/
-│   ├── project.json
+│   ├── project.json        ← includes "id": "myproject-a1b2c3d4"
 │   ├── agents/
 │   │   ├── architect.md
-│   │   ├── reviewer.md
-│   │   ├── architect/
-│   │   │   ├── memory.md
-│   │   │   └── sessions/
-│   │   └── reviewer/
-│   │       ├── memory.md
-│   │       └── sessions/
+│   │   └── reviewer.md
 │   ├── skills/
 │   │   ├── documentation.md
 │   │   └── release-checklist.md
 │   └── mcps.json
 └── src/
+```
+
+Runtime state — local machine only:
+
+```text
+~/.apx/projects/myproject-a1b2c3d4/
+└── agents/
+    ├── architect/
+    │   ├── memory.md
+    │   └── sessions/
+    ├── reviewer/
+    │   ├── memory.md
+    │   └── sessions/
+    └── default/            ← implicit fallback when no agent role is active
+        ├── memory.md
+        └── sessions/
 ```
 
 Example `AGENTS.md`:
