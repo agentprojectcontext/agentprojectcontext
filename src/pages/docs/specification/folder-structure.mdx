@@ -1,25 +1,25 @@
 ---
 title: Folder Structure
-description: The canonical APC draft uses a root AGENTS.md file and a .apc directory for project-owned context.
+description: The canonical APC layout, visibility levels, and version control rules for .apc/ content.
 ---
 
 # Folder Structure
 
 The APC draft standardizes a repository-owned context layer with a canonical `.apc/` directory.
 
-## Canonical draft layout
+## Canonical layout
 
 ```text
 project-root/
-├── AGENTS.md
+├── AGENTS.md                        ← project context: rules, stack, conventions
 └── .apc/
-    ├── project.json
+    ├── project.json                 ← project metadata + apx field
+    ├── .gitignore                   ← safe defaults (created by apx init)
     ├── agents/
-    │   ├── architect.md
-    │   ├── reviewer.md
+    │   ├── architect.md             ← agent definition (commit this)
     │   ├── architect/
-    │   │   ├── memory.md
-    │   │   └── sessions/
+    │   │   ├── memory.md            ← curated memory (commit if meaningful)
+    │   │   └── sessions/            ← raw session logs (local-only, gitignored)
     │   └── reviewer/
     │       ├── memory.md
     │       └── sessions/
@@ -29,16 +29,84 @@ project-root/
     └── mcps.json
 ```
 
+## Visibility levels
+
+APC distinguishes five levels of persistence for `.apc/` content:
+
+| Level | Meaning | Version control |
+|---|---|---|
+| `stable` | Canonical definitions that rarely change | Commit |
+| `project` | Context useful to all contributors | Commit |
+| `local` | Machine-specific runtime history | Gitignore |
+| `private` | Secrets, credentials, personal notes | Gitignore + never commit |
+| `ephemeral` | Caches, temp files, build artifacts | Gitignore |
+
+## What to commit
+
+```text
+AGENTS.md
+.apc/project.json
+.apc/agents/<slug>.md          ← agent definitions
+.apc/agents/<slug>/memory.md   ← curated memory (if useful to team)
+.apc/skills/
+.apc/rules/
+.apc/mcps.json                 ← without secrets
+```
+
+## What to keep local (never commit by default)
+
+```text
+.apc/agents/<slug>/sessions/   ← raw session logs
+.apc/sessions/
+.apc/chats/
+.apc/cache/
+.apc/tmp/
+.apc/private/
+.apc/secrets/
+.apc/*.local.json
+.apc/*.secret.json
+.apc/*.env
+.apc/migrate.md
+```
+
+## Default `.apc/.gitignore`
+
+`apx init` writes this file automatically:
+
+```gitignore
+# APC runtime data — local-first by default
+agents/*/sessions/
+sessions/
+chats/
+cache/
+tmp/
+private/
+secrets/
+*.local.json
+*.secret.json
+*.env
+*.env.*
+migrate.md
+```
+
+If you want to version specific sessions (e.g. curated examples), add explicit exceptions:
+
+```gitignore
+agents/*/sessions/
+!agents/*/sessions/published/
+```
+
+## Privacy and version control
+
+**Golden rule:** APC stores durable project knowledge in the repository, not raw private conversations by default.
+
+Raw sessions are local-first and must be ignored by version control unless explicitly exported or curated by the user.
+
+Agents writing APC-compatible data should never commit private sessions or secrets unless the user explicitly exports sanitized content.
+
 ## Design notes
 
-- `AGENTS.md` is the broad root compatibility contract.
-- `.apc/project.json` stores project metadata.
-- `.apc/agents/<slug>.md` stores structured per-agent definitions when used.
-- `.apc/agents/<slug>/memory.md` stores durable memory.
-- `.apc/skills/` stores reusable project instructions.
-- `.apc/mcps.json` stores optional project-owned MCP hints.
-
-## Unknown paths
-
-Consumers should ignore unknown paths unless another APC extension formally defines them. This
-keeps the portable core small while allowing implementations to evolve.
+- `AGENTS.md` is the broad root compatibility contract — readable by Codex, Cursor, and any tool that follows the convention.
+- `.apc/project.json` stores project metadata including the `apx` installation state.
+- `sessions/` directories under agents are always local-first; extract meaningful decisions to `memory.md`.
+- Unknown paths under `.apc/` are ignored by consumers unless a formal APC extension defines them.
