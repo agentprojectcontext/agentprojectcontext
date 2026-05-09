@@ -17,8 +17,14 @@ Repository: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx
 ```bash
 apx <command> [subcommand] [args] [--flags]
 apx --help
+apx <command> --help
+apx <command> <subcommand> --help
+apx help <command> [subcommand]
 apx --version
 ```
+
+Top-level help gives the complete command index. Command and subcommand help pages give focused
+usage, options, and examples without running the command or starting the daemon.
 
 ## Terminal presentation
 
@@ -147,6 +153,7 @@ APX still uses MCP as the protocol. `.apc/mcps.json` is only project-owned MCP c
 
 ```bash
 apx messages tail
+apx messages chat --channel telegram
 apx messages tail --channel runtime
 apx messages search "deploy"
 
@@ -161,6 +168,9 @@ apx routine add <name> --kind super_agent --schedule every:5m --spec '{"prompt":
 apx permission show
 apx permission set automatico
 ```
+
+Message JSONL records include `type` (`user`, `agent`, `tool`, or `system`) and `actor_id`.
+`apx messages chat` uses those fields to show who spoke in Telegram, agent, routine, and future subagent logs.
 
 Messages and routines are APX runtime features. Store their state outside `.apc/`.
 
