@@ -192,6 +192,13 @@ The super-agent supports permission modes:
 | `automatico` | Run read/list/safe actions directly; require confirmation for shell, runtime, MCP, outbound, config, and filesystem mutations |
 | `permiso` | Only configured `allowed_tools` run directly; other tools require confirmation |
 
+Use `apx permission show` and `apx permission set <mode>` to inspect or change the mode.
+
+Routines can also set their own permission mode. Autonomous routines that need to call the
+super-agent should use `kind: super_agent`; they are scheduled jobs, not interactive chat turns.
+Routine execution history is available through `apx routine history <name>` and project messages on
+channel `routine`.
+
 ## Telegram plugin
 
 Telegram can act as an operator surface:

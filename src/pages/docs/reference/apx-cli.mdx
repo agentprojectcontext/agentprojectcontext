@@ -20,6 +20,12 @@ apx --help
 apx --version
 ```
 
+## Terminal presentation
+
+APX may print a small panda mascot to stderr for setup, status, update, and error states. The
+mascot should stay compact, readable in standard terminals, and avoid emoji glyphs that render
+inconsistently across terminal fonts.
+
 ## Project commands
 
 ```bash
@@ -145,12 +151,21 @@ apx messages tail --channel runtime
 apx messages search "deploy"
 
 apx routine list
+apx routine get <name>
+apx routine history <name>
 apx routine run <name>
 apx routine enable <name>
 apx routine disable <name>
+apx routine add <name> --kind super_agent --schedule every:5m --spec '{"prompt":"..."}'
+
+apx permission show
+apx permission set automatico
 ```
 
 Messages and routines are APX runtime features. Store their state outside `.apc/`.
+
+Routine kinds are `heartbeat`, `exec_agent`, `super_agent`, `telegram`, and `shell`.
+Permission modes are `total`, `automatico`, and `permiso`.
 
 ## Safety rules
 
