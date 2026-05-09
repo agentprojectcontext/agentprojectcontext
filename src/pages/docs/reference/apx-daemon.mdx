@@ -72,7 +72,6 @@ APX runtime state:
 
 ```text
 ~/.apx/projects/<project-id>/
-├── project.db
 ├── messages/
 └── agents/
     └── <slug>/
@@ -80,7 +79,9 @@ APX runtime state:
         └── conversations/
 ```
 
-`project.db` is a regenerable APX cache. It is not APC portable data.
+`~/.apx/projects/default/` is the always-available APX default workspace. It is used for
+system-level work when no user project is named. Registered APC projects can live anywhere on disk
+and remain separate from this default workspace.
 
 ## Core API shape
 
@@ -155,19 +156,41 @@ Useful tools:
 
 - `list_projects`
 - `list_agents`
+- `list_vault_agents`
+- `import_agent`
+- `add_project`
 - `list_mcps`
 - `read_agent_memory`
 - `list_files`
 - `read_file`
+- `write_file`
+- `edit_file`
+- `run_shell`
 - `tail_messages`
 - `search_messages`
 - `call_agent`
 - `call_mcp`
 - `call_runtime`
 - `send_telegram`
+- `set_identity`
 
 The super-agent should call tools for facts. It should not invent project names, agent slugs, MCP
 server names, or runtime availability.
+
+When no project is specified, action tools operate on the default workspace. Inventory tools may
+return all projects so the operator can see the full APX environment.
+
+`run_shell`, `write_file`, and `edit_file` are direct super-agent tools. `call_runtime` is reserved
+for spawning a separate external runtime session such as Codex or Claude Code. `call_mcp` is reserved
+for installed MCP servers.
+
+The super-agent supports permission modes:
+
+| Mode | Behavior |
+| --- | --- |
+| `total` | Execute requested tool actions without confirmation |
+| `automatico` | Run read/list/safe actions directly; require confirmation for shell, runtime, MCP, outbound, config, and filesystem mutations |
+| `permiso` | Only configured `allowed_tools` run directly; other tools require confirmation |
 
 ## Telegram plugin
 
