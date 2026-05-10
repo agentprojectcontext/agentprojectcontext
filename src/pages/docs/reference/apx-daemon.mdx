@@ -183,6 +183,12 @@ server names, or runtime availability.
 When no project is specified, action tools operate on the default workspace. Inventory tools may
 return all projects so the operator can see the full APX environment.
 
+Interactive clients can use the streaming super-agent chat endpoint to render progress while a turn
+is still running. `POST /projects/:pid/super-agent/chat/stream` returns newline-delimited JSON
+events such as `model_start`, `tool_start`, `tool_result`, and a final result. `apx code` uses this
+stream so terminal users can see tool execution as it happens instead of waiting for the whole turn
+to finish.
+
 `run_shell`, `write_file`, and `edit_file` are direct super-agent tools. `call_runtime` is reserved
 for spawning a separate external runtime session such as Codex or Claude Code. `call_mcp` is reserved
 for installed MCP servers.
