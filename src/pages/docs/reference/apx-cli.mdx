@@ -149,6 +149,17 @@ through one CLI surface.
 
 APX still uses MCP as the protocol. `.apc/mcps.json` is only project-owned MCP configuration.
 
+## Terminal assistant
+
+```bash
+apx code
+apx code --project default
+```
+
+`apx code` opens the terminal assistant UI. The message pane can scroll independently from the
+prompt and sidebar. While a turn is still running, the prompt remains editable; pressing Enter queues
+the next user message and sends queued messages in order after the active turn finishes.
+
 ## Messages and routines
 
 ```bash
