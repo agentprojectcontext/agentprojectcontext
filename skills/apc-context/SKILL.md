@@ -42,10 +42,10 @@ Classify content:
 
 | Content | Action |
 |---|---|
-| Agent definitions: role, model, skills, description | Put in `.apc/agents/<slug>.md` and/or `AGENTS.md` |
+| Agent definitions: name, model, description | Put in `.apc/agents/<name>.md` and/or `AGENTS.md` |
 | Shared project rules, stack notes, commands, testing policy | Keep in `AGENTS.md` |
 | Reusable instruction blocks | Move to `.apc/skills/<name>.md` |
-| Durable safe facts useful to all contributors | Add to `.apc/agents/<slug>/memory.md` only after curation |
+| Durable safe facts useful to all contributors | Add to `.apc/agents/<name>/memory.md` only after curation |
 | MCP expectations without secrets | Add to `.apc/mcps.json` |
 | Raw sessions, transcripts, conversations, messages, tool logs | Do not move into `.apc/`; leave with source runtime |
 | Secrets, tokens, credentials, private headers | Do not store in repository |
@@ -68,8 +68,8 @@ AGENTS.md                        ← root project contract
 .apc/
   project.json                   ← project metadata
   .gitignore                     ← safety guard
-  agents/<slug>.md               ← agent definition
-  agents/<slug>/memory.md        ← optional curated project memory
+  agents/<name>.md               ← agent definition
+  agents/<name>/memory.md        ← optional curated project memory
   skills/<name>.md               ← reusable project instructions
   mcps.json                      ← MCP hints without secrets
 ```
@@ -77,7 +77,7 @@ AGENTS.md                        ← root project contract
 Do not store:
 
 ```text
-.apc/agents/<slug>/sessions/
+.apc/agents/<name>/sessions/
 .apc/sessions/
 .apc/conversations/
 .apc/messages/
@@ -102,12 +102,26 @@ Do not store:
 ## Operating rules
 
 1. Read `AGENTS.md` and relevant `.apc/` files before assuming project context.
-2. Read agent definitions from `.apc/agents/<slug>.md` when present.
-3. Read curated project memory from `.apc/agents/<slug>/memory.md` when present.
+2. Read agent definitions from `.apc/agents/<name>.md` when present.
+3. Read curated project memory from `.apc/agents/<name>/memory.md` when present.
 4. Write only durable, safe, curated facts to APC memory.
 5. Never write raw sessions, transcripts, messages, conversations, or tool logs into `.apc/`.
 6. Keep secrets out of APC and out of git.
 7. Treat `.apc/mcps.json` as MCP configuration hints, not as an MCP implementation.
+
+## Normalization
+
+If agent formats are broken or use legacy fields (role, skills in YAML), offer to normalize:
+
+```yaml
+---
+name: agent-name
+model: inherit
+description: Semantic activation trigger
+---
+```
+
+Identify and fix inconsistencies in `model` (use technical IDs or `inherit`) and ensure `description` is present for semantic activation.
 
 ## Sessions
 
@@ -119,11 +133,11 @@ Examples:
 Codex runtime storage
 Claude Code runtime storage
 OpenCode runtime storage
-~/.apx/projects/<project-id>/agents/<slug>/sessions/
+~/.apx/projects/<project-id>/agents/<name>/sessions/
 ```
 
 At task end, provide the user a concise result. If project memory should be updated, write a short
-sanitized fact to `.apc/agents/<slug>/memory.md` only when useful and safe.
+sanitized fact to `.apc/agents/<name>/memory.md` only when useful and safe.
 
 ## APX
 
