@@ -61,6 +61,9 @@ Local runtime files:
 ~/.apx/projects/<project-id>/
 ```
 
+This directory is where APX stores sessions, conversations, messages, local runtime memory, and
+project runtime files. It is not part of the APC portable contract.
+
 ## Daemon commands
 
 ```bash
@@ -83,7 +86,8 @@ apx agent remove sofia
 
 Agent definitions are project context. APX may write `AGENTS.md` and `.apc/agents/<slug>.md`.
 
-Runtime output, transcripts, sessions, and local memory remain APX state.
+Runtime output, transcripts, sessions, messages, conversations, and local runtime memory remain APX
+state under `~/.apx/projects/<project-id>/`.
 
 ## Memory commands
 
@@ -93,8 +97,9 @@ apx memory sofia --append "Durable safe fact"
 apx memory sofia --replace - < memory.md
 ```
 
-APX memory commands edit agent memory. Treat that memory as curated project context: write only
-durable, safe facts that should be visible to future runs and contributors.
+APX memory commands edit curated project memory, not private runtime memory. Write only durable,
+safe facts that should be visible to future runs and contributors. APX private runtime memory stays
+in APX local storage.
 
 ## Session commands
 
@@ -183,7 +188,8 @@ apx permission set automatico
 Message JSONL records include `type` (`user`, `agent`, `tool`, or `system`) and `actor_id`.
 `apx messages chat` uses those fields to show who spoke in Telegram, agent, routine, and future subagent logs.
 
-Messages and routines are APX runtime features. Store their state outside `.apc/`.
+Messages and routines are APX runtime features. Store their state outside `.apc/`, normally under
+`~/.apx/projects/<project-id>/`.
 
 Routine kinds are `heartbeat`, `exec_agent`, `super_agent`, `telegram`, and `shell`.
 Permission modes are `total`, `automatico`, and `permiso`.
@@ -192,6 +198,7 @@ Permission modes are `total`, `automatico`, and `permiso`.
 
 - Do not store secrets in `.apc/`.
 - Do not store raw sessions in `.apc/`.
+- Do not store messages, conversations, or private runtime memory in `.apc/`.
 - Do not store provider transcripts in `.apc/`.
 - Do not treat APX runtime state as APC portable core.
 - Do use APC for durable project context that should travel with the repository.

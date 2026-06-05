@@ -7,7 +7,7 @@ description: APC separates portable project context from sessions, transcripts, 
 
 Runtime state is everything produced while an agent runs.
 
-APC deliberately keeps runtime state outside `.apc/` by default.
+APC deliberately keeps runtime state outside `.apc/`.
 
 ## What counts as runtime state
 
@@ -21,15 +21,18 @@ Runtime state includes:
 - message logs
 - daemon caches
 - IDE-specific metadata
-- private or personal memory
+- private runtime memory
 
 This data often contains sensitive prompts, credentials pasted by mistake, customer data, local
 paths, or intermediate reasoning. It should not travel with the repository unless a human explicitly
 exports and sanitizes it.
 
+APC memory is different: `.apc/agents/<slug>/memory.md` is only for curated project facts safe for
+the team. It is not a dump of private agent memory.
+
 ## Where runtime state belongs
 
-Each runtime should own its own state directory.
+Each runtime should own its own local state directory.
 
 Examples:
 
@@ -42,6 +45,9 @@ Examples:
 
 The exact paths are runtime-specific. APC only requires that raw runtime data does not live in the
 portable `.apc/` project contract.
+
+APX follows this split by keeping sessions, conversations, messages, local runtime memory, and project
+runtime files under `~/.apx/projects/<project-id>/`, not inside the repository's `.apc/` directory.
 
 ## What can move back into APC
 

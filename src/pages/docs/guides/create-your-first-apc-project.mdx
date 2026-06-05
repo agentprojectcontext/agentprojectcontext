@@ -50,7 +50,7 @@ Create `.apc/skills/documentation.md`:
 Write protocol and specification text in a neutral, technical tone.
 ```
 
-## 5. Add memory if needed
+## 5. Add curated project memory if needed
 
 Memory is optional. Add it only for curated facts safe to share with everyone who can read the
 repository.
@@ -78,8 +78,10 @@ This gives compatible tools a stable machine-readable location for richer agent 
 
 Do not create `.apc/sessions`, `.apc/messages`, or `.apc/agents/<slug>/sessions`.
 
-Your IDE, CLI, or APX daemon should keep raw runtime state in its own local storage. If a session
-produces durable project knowledge, extract a short sanitized fact into APC memory or docs.
+Your IDE, CLI, or APX daemon should keep raw runtime state in its own local storage. APX, for
+example, keeps sessions, conversations, messages, local runtime memory, and project runtime files
+under `~/.apx/projects/<project-id>/`. If a session produces durable project knowledge, extract a
+short sanitized fact into APC memory or docs.
 
 ## Result
 

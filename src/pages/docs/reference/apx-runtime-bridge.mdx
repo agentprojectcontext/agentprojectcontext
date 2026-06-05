@@ -34,7 +34,8 @@ The daemon can:
 
 - register multiple APC projects
 - read project context from each repository
-- keep runtime state in `~/.apx/projects/<project-id>/`
+- keep sessions, messages, conversations, local runtime memory, and project runtime files in
+  `~/.apx/projects/<project-id>/`
 - expose a local HTTP API
 - manage plugins such as Telegram
 - schedule routines
@@ -115,7 +116,7 @@ Use APC for:
 - project identity
 - agent definitions
 - skills
-- safe project memory
+- curated project memory
 - MCP hints without secrets
 
 Use APX for:
@@ -127,6 +128,7 @@ Use APX for:
 - local messages
 - local sessions
 - local conversations
+- local runtime memory
 - caches and indexes
 
 Use each IDE for:
@@ -141,7 +143,9 @@ Use each IDE for:
 APX can coordinate many powerful tools. That makes separation more important, not less.
 
 Never store APX tokens, Telegram credentials, MCP secrets, provider API keys, or raw transcripts in
-`.apc/`. Keep them in user-level runtime configuration or environment variables.
+`.apc/`. Keep secrets in user-level runtime configuration or environment variables. Keep APX
+sessions, messages, conversations, local runtime memory, and project runtime files under
+`~/.apx/projects/<project-id>/`.
 
 ## Status
 

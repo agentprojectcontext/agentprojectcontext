@@ -75,9 +75,13 @@ APX runtime state:
 ├── messages/
 └── agents/
     └── <slug>/
+        ├── memory/
         ├── sessions/
         └── conversations/
 ```
+
+APX also keeps project runtime files under this project directory when a subsystem needs local
+state. None of these runtime files belong in `.apc/`.
 
 `~/.apx/projects/default/` is the always-available APX default workspace. It is used for
 system-level work when no user project is named. Registered APC projects can live anywhere on disk
@@ -92,15 +96,36 @@ The daemon may expose local HTTP endpoints such as:
 | Health | `GET /health` | Version, status, uptime |
 | Projects | `GET /projects` | Registered APC projects |
 | Agents | `GET /projects/:pid/agents` | Parsed project agents |
-| Memory | `GET /projects/:pid/agents/:slug/memory` | Curated agent memory |
+| Memory | `GET /projects/:pid/agents/:slug/memory` | Curated project memory |
 | Sessions | `GET /projects/:pid/agents/:slug/sessions` | APX runtime sessions |
 | MCPs | `GET /projects/:pid/mcps` | Merged MCP view |
 | MCP calls | `POST /projects/:pid/mcps/:name/call` | Proxy `tools/call` |
 | Runtimes | `POST /projects/:pid/agents/:slug/runtime` | Spawn external runtime |
 | Messages | `GET /projects/:pid/messages` | Local APX message history |
 | Routines | `GET /projects/:pid/routines` | Scheduled APX tasks |
+| Deck | `GET /deck/manifest` | Bootstrap data for APX Deck companion clients |
 
 Endpoint names are APX implementation detail. APC consumers should not require the APX daemon.
+
+## APX Deck bridge
+
+APX Deck is a companion client surface for a phone or secondary device. The daemon exposes
+`GET /deck/manifest` as a read-only bootstrap endpoint for that client.
+
+The manifest may include:
+
+- daemon metadata and uptime
+- registered APX projects
+- an active project guess
+- loaded APX plugin status
+- Deck desktop and widget descriptors
+- safe APX action descriptors
+- endpoint hints for voice, transcription, projects, plugins, and super-agent chat
+
+Deck-specific external integrations such as Docker, Dokploy, Factorial, mail, browsers, and chat
+apps should stay as Deck plugins or widgets unless APX itself needs a generic daemon capability.
+Dangerous actions should require confirmation and should route through APX allowlists instead of
+arbitrary command execution.
 
 ## MCP merge
 
@@ -143,13 +168,14 @@ qwen-code
 Dispatch flow:
 
 1. Read APC project context.
-2. Build the agent prompt from definition, skills, and safe memory.
+2. Build the agent prompt from definition, skills, and curated project memory.
 3. Create APX local session metadata.
 4. Spawn the selected runtime.
 5. Capture stdout, exit status, and external transcript path when available.
 6. Store APX session result under `~/.apx/`.
 
 Raw external transcripts stay with the runtime that created them.
+APX session metadata stays under `~/.apx/projects/<project-id>/`.
 
 ## Super-agent
 
@@ -252,6 +278,7 @@ APX coordinates powerful local capabilities. Keep its trust boundary explicit:
 - localhost by default
 - no secrets in `.apc/`
 - no raw sessions in `.apc/`
+- no messages, conversations, or private runtime memory in `.apc/`
 - no provider transcripts in `.apc/`
 - user-level config for credentials
 - project files for project intent only

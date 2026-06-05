@@ -6,7 +6,7 @@ This directory shows the current repository layout:
 
 - root `AGENTS.md`
 - project context under `.apc/`
-- per-agent memory files
+- curated per-agent project memory files
 - reusable skills
 - MCP hints without secrets
 
@@ -34,6 +34,6 @@ This directory shows the current repository layout:
 ## Notes
 
 - This example reflects the current implementation in this repository.
-- Runtime artifacts, such as sessions, conversations, `project.db`, or message logs, are not APC portable-core content.
+- Runtime artifacts, such as sessions, conversations, `project.db`, message logs, or private runtime memory, are not APC portable-core content.
 - APX stores runtime state under `~/.apx/projects/<project-id>/`; IDEs keep their own runtime state in their own local stores.
 - The broader APC docs live in the repository root under [README](../../README.md) and [`docs/`](../../docs/).

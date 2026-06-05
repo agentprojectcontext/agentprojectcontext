@@ -7,7 +7,7 @@ description: APC memory files let projects preserve durable agent-specific conte
 
 Memory in APC is durable, curated context tied to a project agent.
 
-It is not raw chat history.
+It is not raw chat history, runtime-local memory, or private runtime state.
 
 ## Location
 
@@ -64,12 +64,15 @@ Do not put these in APC memory:
 
 Runtime-local memory belongs in the runtime's storage, not in `.apc/`.
 
+For example, APX keeps runtime memory, sessions, messages, conversations, and project runtime files
+under `~/.apx/projects/<project-id>/`. APC keeps only curated project memory that is safe to commit.
+
 ## Project memory vs runtime memory
 
 | | APC `memory.md` | Runtime memory / sessions |
 |---|---|---|
 | Visibility | Project-shared | Local or runtime-private |
-| Location | `.apc/agents/<slug>/memory.md` | Runtime-owned directory |
+| Location | `.apc/agents/<slug>/memory.md` | Runtime-owned directory such as `~/.apx/projects/<project-id>/` |
 | Version control | Commit only if safe | Never commit by default |
 | Written by | Human or agent after curation | Runtime |
 | Purpose | Durable facts and decisions | Full history, scratch state, private notes |

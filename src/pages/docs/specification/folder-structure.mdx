@@ -46,7 +46,8 @@ Do not place these paths in `.apc/`:
 ```
 
 Runtimes keep those files in their own local storage. For example, APX uses
-`~/.apx/projects/<project-id>/`, while IDE-specific agents use their own local directories.
+`~/.apx/projects/<project-id>/` for sessions, conversations, messages, local runtime memory, and
+project runtime files, while IDE-specific agents use their own local directories.
 
 ## Visibility levels
 
@@ -82,6 +83,7 @@ local MCP process caches
 tool call transcripts
 raw session logs
 provider conversation threads
+private runtime memory
 ```
 
 ## Default `.apc/.gitignore`
@@ -118,7 +120,8 @@ docs/examples/sessions/
 
 ## Privacy and version control
 
-**Golden rule:** APC stores durable project knowledge in the repository, not raw private conversations by default.
+**Golden rule:** APC stores durable project knowledge in the repository, not raw private conversations,
+messages, sessions, or runtime memory.
 
 Raw sessions are runtime-owned and should stay outside `.apc/`. If a user explicitly wants to share
 one, export a sanitized summary into project docs or curated memory.

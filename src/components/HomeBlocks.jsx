@@ -27,8 +27,8 @@ export function HomeGrid() {
         <div className="apc-kicker">Scope</div>
         <h3>Project-level context</h3>
         <p>
-          APC covers metadata, agent definitions, skills, memory, and related project conventions. It
-          does not define runtime execution.
+          APC covers metadata, agent definitions, skills, curated project memory, and related
+          project conventions. It does not define runtime execution or store private runtime state.
         </p>
       </div>
       <div className="apc-card">
