@@ -1,0 +1,168 @@
+---
+title: One Context, One Name
+description: APC standardizes tool-specific context mechanics under a single neutral name — .apc — instead of duplicating project meaning across .claude, .codex, .cursor, and similar folders.
+---
+
+# One Context, One Name
+
+Every major agent runtime eventually invents its own project folder:
+
+```text
+.claude/
+.codex/
+.cursor/
+.opencode/
+.windsurf/
+```
+
+Each one solves a similar problem: give the agent durable knowledge about *this repository*.
+Each one also grows its own layout, filenames, and mental model. The result is not five different
+features. It is the same project context copied five times under five vendor names.
+
+APC does not add a sixth silo. APC gives that shared layer **one neutral name**: `.apc/`.
+
+## APC is not "another context folder"
+
+It is easy to read APC as "yet another place to put prompts." That misses the point.
+
+Project context already exists. Teams already write:
+
+- who the agents are
+- how the repo should be reviewed
+- which stack and commands matter
+- which MCP servers the project expects
+- which facts should survive the next session
+
+That information is natural to the project. It belongs to the repository, not to Claude, Codex, or
+Cursor as products.
+
+APC does not invent a new kind of knowledge. It **names and structures** knowledge that was always
+project-owned, but was previously trapped inside tool-branded directories.
+
+```text
+Before APC:
+  project meaning → .claude/ + .codex/ + .cursor/ + ...
+
+With APC:
+  project meaning → .apc/          ← one source
+  runtime mechanics → each tool    ← projections and private state
+```
+
+The goal is not to replace every IDE feature. The goal is to stop asking every runtime to own the
+same project contract under a different folder name.
+
+## What APC standardizes
+
+APC looks at what `.claude/`, `.codex/`, `.cursor/`, and peers already do, then maps the durable
+parts into a small portable core:
+
+| Concern | APC location | Typical tool-specific homes |
+| --- | --- | --- |
+| Root project contract | `AGENTS.md` | `CLAUDE.md`, editor guidance files |
+| Agent definitions | `.apc/agents/<slug>.md` | `.claude/agents/`, runtime agent config |
+| Reusable instructions | `.apc/skills/<name>.md` | duplicated prompt blocks per tool |
+| Path-scoped rules | `.apc/rules/*.mdc` | `.cursor/rules/`, `.claude/rules/` |
+| Durable plans | `.apc/plans/` | IDE planning UI or scratch files |
+| Curated project memory | `.apc/agents/<slug>/memory.md` | hidden runtime memory stores |
+| MCP expectations | `.apc/mcps.json` | `.cursor/mcp.json`, Claude `.mcp.json`, Codex config |
+| Project metadata | `.apc/project.json` | scattered tool config |
+
+This is standardization by **separation of concerns**:
+
+- **project-owned meaning** lives in APC
+- **runtime-owned mechanics** stay with the runtime
+
+Sessions, transcripts, caches, private memory, UI settings, and secrets are not APC problems. They
+stay in `~/.codex/`, `~/.claude/`, `~/.cursor/`, `~/.apx/projects/<id>/`, or equivalent runtime
+storage.
+
+## Source and projection
+
+Compatible runtimes can keep tool-specific files when they need them. Those files should behave as
+**projections**, not as a second source of truth.
+
+```text
+.apc/agents/reviewer.md
+        ↓ projection
+.claude/agents/reviewer.md   (if Claude Code needs its own layout)
+
+.apc/rules/api.mdc
+        ↓ projection
+.cursor/rules/api.mdc
+
+.apc/mcps.json
+        ↓ projection
+.cursor/mcp.json
+```
+
+The rule is directional:
+
+1. APC holds the project contract.
+2. A runtime may mirror or import it.
+3. The runtime must not become the only place where project meaning is edited.
+
+If two folders disagree, APC wins for shared project context.
+
+## Why one name matters
+
+A single name changes how teams reason about context:
+
+| With many vendor folders | With APC |
+| --- | --- |
+| "Did we update Claude *and* Cursor?" | "Did we update `.apc/`?" |
+| Context follows the last tool used | Context follows the repository |
+| Onboarding depends on editor choice | Onboarding starts at `AGENTS.md` and `.apc/` |
+| Review diffs are noisy and duplicated | Review diffs show one project contract |
+
+`.apc/` is intentionally neutral. It does not say "this project belongs to Claude" or "this
+project belongs to Codex." It says **this project has agent-readable context**, and any compatible
+consumer may read it.
+
+That neutrality is the product decision: one filesystem convention, many runtimes, no vendor lock-in
+for project meaning.
+
+## What APC does not claim
+
+APC is not:
+
+- a replacement for every IDE feature
+- a mandate to delete `.claude/` or `.cursor/` on day one
+- a session store or chat archive
+- a secret manager
+- a runtime or daemon
+
+Tool folders can remain for mechanics the runtime truly owns. APC only asks teams to stop treating
+`.claude/`, `.codex/`, and `.cursor/` as three separate projects that happen to share a git
+remote.
+
+## Practical adoption
+
+A repository that adopts APC typically looks like this:
+
+```text
+MyProject/
+├── AGENTS.md                 ← root contract, readable everywhere
+└── .apc/                     ← structured project context
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    ├── rules/
+    ├── plans/
+    └── mcps.json
+```
+
+Optional tool folders may still exist beside it. They should shrink over time as duplicated project
+meaning moves into APC.
+
+For a step-by-step migration path, see
+[Migrate from IDE-Specific Context](/docs/guides/migrate-from-ide-specific-context).
+
+## Summary
+
+APC standardizes the mechanics that `.claude/`, `.codex/`, `.cursor/`, and similar systems already
+approximate. But APC is not "a context folder" in the sense of one more prompt dump.
+
+APC is the **natural project context layer** with a single name every system can share: `.apc/`.
+
+Project meaning belongs to the repository. Runtime history belongs to the runtime. APC exists so
+teams do not have to choose a vendor name every time they want an agent to understand the project.

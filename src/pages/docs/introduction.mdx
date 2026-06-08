@@ -5,15 +5,23 @@ description: APC is a portable convention for storing project-level context for 
 
 # Introduction
 
-APC, Agent Project Context, is a portable convention for storing agent-readable project context
-inside a repository.
+Every major AI coding tool — Claude Code, Codex, Cursor, Windsurf, OpenCode — invents its own
+project folder: `.claude/`, `.codex/`, `.cursor/`, `.windsurf/`. Each one stores the same kind of
+knowledge: which agents exist, what the project rules are, which skills and MCP servers matter.
+The result is the same context duplicated under many vendor names.
 
-It answers one narrow question:
+APC, Agent Project Context, is a proposal for those tools to converge on one neutral name: `.apc/`.
+
+The mission is not for developers to maintain yet another folder. The mission is for tool vendors
+to adopt `.apc/` as their native default, replacing their own branded directories. APX is the
+reference runtime that enables this today, before native vendor support exists.
+
+APC answers one narrow question:
 
 > What should every compatible agent know when it enters this project?
 
 APC is not an agent runner, database, daemon, IDE plugin, or chat transcript store. It is the
-project-owned context layer that many tools can read before they start work.
+project-owned context layer that any compatible tool can read before it starts work.
 
 <figure className="apc-flow-figure">
   <img
@@ -87,6 +95,7 @@ APC is designed to coexist with:
 
 The goal is not to forbid tool-specific configuration. The goal is to stop copying the same project
 meaning into `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, and other runtime-specific places.
+See [One Context, One Name](/docs/concepts/one-context-one-name) for the full rationale.
 
 Each IDE or runtime may still keep its own sessions and transcripts. That separation is intentional:
 sessions often contain private prompts, credentials pasted by mistake, production data, or customer

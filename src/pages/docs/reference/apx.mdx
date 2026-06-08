@@ -1,0 +1,42 @@
+---
+title: APX
+description: APX is the reference runtime that bridges current AI tools to .apc/ today, before native vendor support exists.
+---
+
+# APX
+
+APC is a protocol. APX is the reference runtime that makes that protocol usable today.
+
+> APX is to APC what a language SDK is to a protocol spec.
+
+## Why APX matters for APC adoption
+
+APC's mission is for AI tools — Claude Code, Codex, Cursor, Windsurf — to natively read `.apc/`
+as their default context directory. Until that native vendor support exists, APX bridges the gap.
+
+APX installs **skills** into compatible runtimes. Those skills teach tools like Claude Code how
+to read `.apc/`, which agents exist, which skills apply, and how to treat `.apc/` as the project
+context source. This is how you enforce APC adoption today — without waiting for each vendor to
+ship native support.
+
+## What APX does for APC adoption
+
+- Installs APC-aware skills into Claude Code, Codex, and other runtimes so they treat `.apc/` as
+  the project context source
+- Keeps runtime state (sessions, memory, messages) outside `.apc/` under `~/.apx/`
+- Provides the local operational layer (daemon, CLI) that APC deliberately avoids defining
+
+## APX is not APC
+
+APC defines what lives in the repository. APX defines what runs locally.
+
+Sessions, conversations, messages, and runtime caches are APX concerns. They stay in `~/.apx/`
+and are never committed. The `.apc/` folder contains only durable project meaning — agent
+definitions, skills, rules, curated memory — that is safe to review and version.
+
+## Full APX documentation
+
+Daemon, CLI, runtimes, engines, Telegram, routines, and all operational details live in the APX
+repository and documentation:
+
+- APX repo: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx)

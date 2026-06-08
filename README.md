@@ -1,5 +1,9 @@
 # Agent Project Context — Specification & Documentation
 
+**Mission:** Establish `.apc/` as the single neutral directory for project-level agent context,
+so AI tools — Claude Code, Codex, Cursor, Windsurf, and others — converge on one shared name
+instead of each maintaining their own branded folder (`.claude/`, `.codex/`, `.cursor/`, etc.).
+
 This repository contains the APC specification and the source for the documentation site at **[agentprojectcontext.com](https://agentprojectcontext.com)**.
 
 > New to APC? Start at the [documentation →](https://agentprojectcontext.com)

@@ -10,6 +10,16 @@ APC is a filesystem convention for project-level agent context.
 Its purpose is to let a repository declare context that multiple tools can share without rewriting,
 rediscovering, or leaking runtime-specific data.
 
+## The mission
+
+APC is a proposal to the industry.
+
+Today every major AI tool invents its own project folder: `.claude/`, `.codex/`, `.cursor/`, `.windsurf/`. Each solves the same problem — give the agent durable knowledge about this repository — under a different vendor name.
+
+APC's mission is for those vendors to converge on one neutral directory: `.apc/`. The goal is not for developers to manually maintain an extra folder. The goal is for Claude Code, Codex, Cursor, Windsurf, and others to adopt `.apc/` as their native default, so the fragmented landscape of branded folders shrinks to one shared name.
+
+APX is the reference runtime that lets teams start using `.apc/` today, before that native tool support arrives.
+
 ## APC is about the project
 
 APC models the idea that some context belongs to the project itself, not only to the current
