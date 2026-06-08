@@ -1,0 +1,69 @@
+---
+title: What Is APC?
+description: APC defines a portable .apc/ folder convention for agent-readable project context.
+---
+
+# What Is APC?
+
+APC is a filesystem convention for project-level agent context.
+
+Its purpose is to let a repository declare context that multiple tools can share without rewriting,
+rediscovering, or leaking runtime-specific data.
+
+## APC is about the project
+
+APC models the idea that some context belongs to the project itself, not only to the current
+runtime or editor. Examples include:
+
+- which agents exist
+- what those agents are responsible for
+- which reusable skills the project defines
+- which curated long-lived project facts should persist
+- which MCP endpoints the project expects to use
+
+This context should remain useful after switching from Codex to Claude Code, from Cursor to
+OpenCode, or from a local CLI to an automated runner.
+
+## APC is not a runtime
+
+APC does not specify:
+
+- a daemon process
+- a CLI
+- a database engine
+- a vendor-specific integration
+- a hosted service
+- where a specific IDE, CLI, or runtime stores its transcripts, sessions, messages, or private memory
+
+A runtime may consume APC, extend it, cache it, or project it into another interface, but APC
+itself remains the portable layer.
+
+## APC is not a session store
+
+Raw sessions belong outside `.apc/`.
+
+Sessions are produced by a specific runtime and can contain sensitive data. A Codex session stays in
+Codex-owned storage, a Claude Code session stays in Claude-owned storage, and an APX session stays
+under APX-owned storage such as `~/.apx/projects/<project-id>/`. APC can contain only a curated,
+sanitized project fact extracted from that history.
+
+The rule is simple:
+
+- store durable project meaning in APC
+- store runtime history in the runtime
+- store secrets nowhere in the repository
+
+## Canonical example
+
+```text
+MyProject/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    └── mcps.json
+```
+
+The exact portable core is intentionally small. APC values stability and clarity over feature
+volume.

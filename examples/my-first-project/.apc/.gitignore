@@ -1,0 +1,18 @@
+# Runtime data must not live in APC. Ignore if created by older tools.
+agents/*/sessions/
+agents/*/conversations/
+sessions/
+conversations/
+messages/
+chats/
+cache/
+tmp/
+private/
+secrets/
+project.db
+*.local.json
+*.secret.json
+*.env
+*.env.*
+mcps.local.json
+migrate.md

@@ -1,0 +1,284 @@
+---
+title: APX Daemon
+description: APX daemon architecture for local project registration, MCP access, runtime dispatch, Telegram, and routines.
+---
+
+# APX Daemon
+
+The APX daemon is a local runtime service for APC projects.
+
+It can turn repository context into an operational API without making APC itself a daemon protocol.
+
+Repository: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx).
+
+## Scope
+
+The daemon may:
+
+- register many APC projects
+- read `AGENTS.md` and `.apc/`
+- maintain local runtime state under `~/.apx/`
+- merge MCP configuration views
+- proxy MCP tool calls
+- dispatch agents through external runtimes
+- run a daemon-level super-agent
+- expose Telegram or other plugins
+- schedule routines and heartbeats
+
+The daemon must not:
+
+- write raw sessions into `.apc/`
+- write conversations into `.apc/`
+- write message logs into `.apc/`
+- write SQLite caches into `.apc/`
+- store secrets in project files
+
+## Lifecycle
+
+```bash
+apx daemon start
+apx daemon stop
+apx daemon status
+apx daemon logs --tail 100
+```
+
+Recommended defaults:
+
+```text
+host: 127.0.0.1
+port: 7430
+config: ~/.apx/config.json
+pid: ~/.apx/daemon.pid
+log: ~/.apx/daemon.log
+```
+
+The daemon should bind to localhost unless the user explicitly configures another trust boundary.
+
+## Storage model
+
+APC project contract:
+
+```text
+project-root/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    └── mcps.json
+```
+
+APX runtime state:
+
+```text
+~/.apx/projects/<project-id>/
+├── messages/
+└── agents/
+    └── <slug>/
+        ├── memory/
+        ├── sessions/
+        └── conversations/
+```
+
+APX also keeps project runtime files under this project directory when a subsystem needs local
+state. None of these runtime files belong in `.apc/`.
+
+`~/.apx/projects/default/` is the always-available APX default workspace. It is used for
+system-level work when no user project is named. Registered APC projects can live anywhere on disk
+and remain separate from this default workspace.
+
+## Core API shape
+
+The daemon may expose local HTTP endpoints such as:
+
+| Area | Example path | Purpose |
+| --- | --- | --- |
+| Health | `GET /health` | Version, status, uptime |
+| Projects | `GET /projects` | Registered APC projects |
+| Agents | `GET /projects/:pid/agents` | Parsed project agents |
+| Memory | `GET /projects/:pid/agents/:slug/memory` | Curated project memory |
+| Sessions | `GET /projects/:pid/agents/:slug/sessions` | APX runtime sessions |
+| MCPs | `GET /projects/:pid/mcps` | Merged MCP view |
+| MCP calls | `POST /projects/:pid/mcps/:name/call` | Proxy `tools/call` |
+| Runtimes | `POST /projects/:pid/agents/:slug/runtime` | Spawn external runtime |
+| Messages | `GET /projects/:pid/messages` | Local APX message history |
+| Routines | `GET /projects/:pid/routines` | Scheduled APX tasks |
+| Deck | `GET /deck/manifest` | Bootstrap data for APX Deck companion clients |
+
+Endpoint names are APX implementation detail. APC consumers should not require the APX daemon.
+
+## APX Deck bridge
+
+APX Deck is a companion client surface for a phone or secondary device. The daemon exposes
+`GET /deck/manifest` as a read-only bootstrap endpoint for that client.
+
+The manifest may include:
+
+- daemon metadata and uptime
+- registered APX projects
+- an active project guess
+- loaded APX plugin status
+- Deck desktop and widget descriptors
+- safe APX action descriptors
+- endpoint hints for voice, transcription, projects, plugins, and super-agent chat
+
+Deck-specific external integrations such as Docker, Dokploy, Factorial, mail, browsers, and chat
+apps should stay as Deck plugins or widgets unless APX itself needs a generic daemon capability.
+Dangerous actions should require confirmation and should route through APX allowlists instead of
+arbitrary command execution.
+
+## MCP merge
+
+APX can read project MCP hints from:
+
+```text
+.apc/mcps.json
+```
+
+It may also inspect compatible tool-specific files:
+
+```text
+.mcp.json
+.cursor/mcp.json
+.vscode/mcp.json
+.roo/mcp.json
+.gemini/settings.json
+```
+
+APC entries should win when names conflict because `.apc/mcps.json` represents the project-owned
+intent.
+
+APX may call MCP tools through the daemon, but MCP remains the protocol. APX is an MCP host/client
+implementation bridge, not a replacement for MCP.
+
+## Runtime dispatch
+
+APX can spawn external runtimes:
+
+```text
+codex
+claude-code
+opencode
+aider
+cursor-agent
+gemini-cli
+qwen-code
+```
+
+Dispatch flow:
+
+1. Read APC project context.
+2. Build the agent prompt from definition, skills, and curated project memory.
+3. Create APX local session metadata.
+4. Spawn the selected runtime.
+5. Capture stdout, exit status, and external transcript path when available.
+6. Store APX session result under `~/.apx/`.
+
+Raw external transcripts stay with the runtime that created them.
+APX session metadata stays under `~/.apx/projects/<project-id>/`.
+
+## Super-agent
+
+APX may run a daemon-level agent above all registered projects.
+
+Useful tools:
+
+- `list_projects`
+- `list_agents`
+- `list_vault_agents`
+- `import_agent`
+- `add_project`
+- `list_mcps`
+- `read_agent_memory`
+- `list_files`
+- `read_file`
+- `write_file`
+- `edit_file`
+- `run_shell`
+- `tail_messages`
+- `search_messages`
+- `call_agent`
+- `call_mcp`
+- `call_runtime`
+- `send_telegram`
+- `set_identity`
+
+The super-agent should call tools for facts. It should not invent project names, agent slugs, MCP
+server names, or runtime availability.
+
+When no project is specified, action tools operate on the default workspace. Inventory tools may
+return all projects so the operator can see the full APX environment.
+
+Interactive clients can use the streaming super-agent chat endpoint to render progress while a turn
+is still running. `POST /projects/:pid/super-agent/chat/stream` returns newline-delimited JSON
+events such as `model_start`, `tool_start`, `tool_result`, and a final result. `apx code` uses this
+stream so terminal users can see tool execution as it happens instead of waiting for the whole turn
+to finish.
+
+`run_shell`, `write_file`, and `edit_file` are direct super-agent tools. `call_runtime` is reserved
+for spawning a separate external runtime session such as Codex or Claude Code. `call_mcp` is reserved
+for installed MCP servers.
+
+The super-agent supports permission modes:
+
+| Mode | Behavior |
+| --- | --- |
+| `total` | Execute requested tool actions without confirmation |
+| `automatico` | Run read/list/safe actions directly; require confirmation for shell, runtime, MCP, outbound, config, and filesystem mutations |
+| `permiso` | Only configured `allowed_tools` run directly; other tools require confirmation |
+
+Use `apx permission show` and `apx permission set <mode>` to inspect or change the mode.
+
+Routines can also set their own permission mode. Autonomous routines that need to call the
+super-agent should use `kind: super_agent`; they are scheduled jobs, not interactive chat turns.
+Routine execution history is available through `apx routine history <name>` and project messages on
+channel `routine`.
+
+## Telegram plugin
+
+Telegram can act as an operator surface:
+
+- receive inbound commands
+- route requests to a project or super-agent
+- send status updates
+- trigger routines
+- dispatch runtimes
+
+Telegram tokens, chat IDs, and routing secrets belong in APX user-level config, not `.apc/`.
+
+## Routines
+
+APX routines can run scheduled local work:
+
+- heartbeat messages
+- agent execution
+- Telegram notifications
+- shell commands with timeouts
+- manual triggers
+
+Routine state is APX runtime state.
+
+## Failure handling
+
+Recommended behavior:
+
+| Failure | Behavior |
+| --- | --- |
+| Daemon already running | No-op or report status |
+| Port in use | Refuse and suggest another port |
+| MCP process crash | Mark unhealthy and respawn on next call |
+| Runtime missing | Report runtime detection result |
+| Telegram rate limit | Backoff and retry within plugin limits |
+| Project moved | Require re-registration or rebuild |
+
+## Security rule
+
+APX coordinates powerful local capabilities. Keep its trust boundary explicit:
+
+- localhost by default
+- no secrets in `.apc/`
+- no raw sessions in `.apc/`
+- no messages, conversations, or private runtime memory in `.apc/`
+- no provider transcripts in `.apc/`
+- user-level config for credentials
+- project files for project intent only

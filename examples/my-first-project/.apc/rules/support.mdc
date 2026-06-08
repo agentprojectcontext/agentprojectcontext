@@ -1,0 +1,9 @@
+---
+description: Support workflow rules
+globs:
+  - "support/**/*.md"
+alwaysApply: false
+---
+
+- Use Spanish rioplatense for customer-facing support drafts.
+- Escalate refunds above USD 500 to martin.

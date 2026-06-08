@@ -4,6 +4,7 @@ export default {
   agents: 'Agents',
   skills: 'Skills',
   rules: 'Rules',
+  plans: 'Plans',
   memory: 'Memory',
   'mcp-config': 'MCP Config'
 }
