@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="150" ry="150" fill="#000000"/>
+
   <!-- Folder shape: tab at top-left, rounded corners throughout -->
   <path
     d="M 148,68

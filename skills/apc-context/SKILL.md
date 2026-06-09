@@ -81,7 +81,6 @@ Do not store:
 .apc/sessions/
 .apc/conversations/
 .apc/messages/
-.apc/project.db
 .apc/cache/
 .apc/tmp/
 .apc/private/

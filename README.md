@@ -6,6 +6,8 @@ instead of each maintaining their own branded folder (`.claude/`, `.codex/`, `.c
 
 This repository contains the APC specification and the source for the documentation site at **[agentprojectcontext.com](https://agentprojectcontext.com)**.
 
+![APC — one neutral context layer, any compatible tool reads it](https://agentprojectcontext.com/images/apc-context-flow.webp)
+
 > New to APC? Start at the [documentation →](https://agentprojectcontext.com)
 
 ---

@@ -42,7 +42,7 @@ This directory shows the current repository layout:
 ## Notes
 
 - This example reflects the current implementation in this repository.
-- Runtime artifacts, such as sessions, conversations, `project.db`, message logs, or private runtime memory, are not APC portable-core content.
+- Runtime artifacts, such as sessions, conversations, message logs, or private runtime memory, are not APC portable-core content.
 - `.apc/mcps.json` uses environment placeholders, not literal secrets.
 - APX stores runtime state under `~/.apx/projects/<project-id>/`; IDEs keep their own runtime state in their own local stores.
 - The broader APC docs live in the repository root under [README](../../README.md) and [`docs/`](../../docs/).
