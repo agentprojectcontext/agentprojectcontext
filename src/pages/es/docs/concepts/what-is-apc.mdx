@@ -1,0 +1,86 @@
+---
+title: ¿Qué es APC?
+description: APC define una convención portable de carpeta .apc/ para contexto del proyecto legible por agentes.
+---
+
+# ¿Qué es APC?
+
+APC es una convención de filesystem para contexto de agentes a nivel proyecto.
+
+Su propósito es permitir que un repositorio declare contexto que múltiples herramientas puedan
+compartir sin tener que reescribirlo, redescubrirlo o filtrar datos específicos del runtime.
+
+## La misión
+
+APC es una propuesta para la industria.
+
+Hoy cada herramienta de IA importante inventa su propia carpeta de proyecto: `.claude/`, `.codex/`,
+`.cursor/`, `.windsurf/`. Cada una resuelve el mismo problema —darle al agente conocimiento durable
+sobre este repositorio— bajo un nombre de proveedor distinto.
+
+La misión de APC es que esos proveedores converjan en un único directorio neutral: `.apc/`. El
+objetivo no es que los desarrolladores mantengan a mano una carpeta extra. El objetivo es que Claude
+Code, Codex, Cursor, Windsurf y otros adopten `.apc/` como su default nativo, para que el panorama
+fragmentado de carpetas con marca se reduzca a un único nombre compartido.
+
+APX es el runtime de referencia que permite a los equipos empezar a usar `.apc/` hoy, antes de que
+llegue ese soporte nativo en las herramientas.
+
+## APC se trata del proyecto
+
+APC modela la idea de que parte del contexto le pertenece al proyecto en sí, no solo al runtime o
+editor actual. Algunos ejemplos:
+
+- qué agentes existen
+- de qué son responsables esos agentes
+- qué skills reutilizables define el proyecto
+- qué hechos curados de larga duración del proyecto deben persistir
+- qué endpoints de MCP espera usar el proyecto
+
+Este contexto debería seguir siendo útil después de pasar de Codex a Claude Code, de Cursor a
+OpenCode, o de un CLI local a un runner automatizado.
+
+## APC no es un runtime
+
+APC no especifica:
+
+- un proceso daemon
+- un CLI
+- un motor de base de datos
+- una integración específica del proveedor
+- un servicio hosteado
+- dónde un IDE, CLI o runtime específico guarda sus transcripts, sesiones, mensajes o memoria privada
+
+Un runtime puede consumir APC, extenderlo, cachearlo o proyectarlo a otra interfaz, pero APC en sí
+sigue siendo la capa portable.
+
+## APC no es un almacén de sesiones
+
+Las sesiones crudas viven fuera de `.apc/`.
+
+Las sesiones las produce un runtime específico y pueden contener datos sensibles. Una sesión de
+Codex se queda en el almacenamiento propio de Codex, una sesión de Claude Code se queda en el
+almacenamiento propio de Claude, y una sesión de APX se queda bajo el almacenamiento propio de APX,
+como `~/.apx/projects/<project-id>/`. APC solo puede contener un hecho del proyecto curado y
+saneado, extraído de esa historia.
+
+La regla es simple:
+
+- guardar el significado durable del proyecto en APC
+- guardar la historia del runtime en el runtime
+- no guardar secretos en ningún lado del repositorio
+
+## Ejemplo canónico
+
+```text
+MyProject/
+├── AGENTS.md
+└── .apc/
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    └── mcps.json
+```
+
+El núcleo portable exacto es intencionalmente pequeño. APC valora la estabilidad y la claridad por
+sobre el volumen de features.

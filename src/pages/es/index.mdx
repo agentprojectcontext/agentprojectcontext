@@ -1,0 +1,61 @@
+---
+title: Agent Project Context
+description: APC es un estándar de carpeta .apc/ portable para almacenar contexto de proyecto destinado a agentes de IA, IDEs y herramientas de desarrollo.
+---
+
+import { HomeHero, HomeGrid, HomePrinciples, HomeNote } from '../../components/HomeBlocks'
+
+<HomeHero locale="es" />
+
+<figure className="apc-flow-figure">
+  <img
+    src="/images/apc-context-flow.webp"
+    alt="APC como capa de contexto de proyecto compartida entre aplicaciones de IA y los datos, conocimiento, herramientas e integraciones del proyecto."
+    width="1280"
+    height="721"
+  />
+</figure>
+
+<HomeGrid locale="es" />
+
+## Por qué APC
+
+Cada vez más equipos mantienen prompts de agentes, skills, reglas y memoria en ubicaciones
+duplicadas y específicas de cada herramienta, como:
+
+- `.claude/`
+- `.cursor/`
+- `.windsurf/`
+- `.codex/`
+- `.opencode/`
+
+APC propone un modelo más simple:
+
+> Un proyecto debería tener una sola capa de contexto durable que cualquier herramienta compatible pueda leer.
+
+## Qué estandariza APC
+
+- metadatos del proyecto
+- definiciones de agentes
+- skills reutilizables
+- memoria curada del proyecto
+- hints opcionales del registry de MCP
+
+## Por dónde empezar
+
+- [Introducción](/es/docs/introduction)
+- [¿Qué es APC?](/es/docs/concepts/what-is-apc)
+- [APC vs MCP](/es/docs/concepts/apc-vs-mcp)
+- [Estructura de carpetas](/es/docs/specification/folder-structure)
+- [Creá tu primer proyecto APC](/es/docs/guides/create-your-first-apc-project)
+
+## Principios
+
+<HomePrinciples locale="es" />
+
+## Borrador actual
+
+El borrador actual de APC usa un directorio canónico `.apc/` y trata al filesystem como
+la fuente de verdad durable, propiedad del proyecto.
+
+<HomeNote locale="es" />

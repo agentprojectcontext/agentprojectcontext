@@ -1,0 +1,148 @@
+---
+title: Estructura de carpetas
+description: El layout canónico de APC, los niveles de visibilidad y las reglas de control de versiones para el contenido de .apc/.
+---
+
+# Estructura de carpetas
+
+El borrador de APC estandariza una capa de contexto propiedad del repositorio con un directorio canónico `.apc/`.
+
+## Layout canónico
+
+```text
+project-root/
+├── AGENTS.md                        ← project context: rules, stack, conventions
+└── .apc/
+    ├── project.json                 ← project metadata
+    ├── .gitignore                   ← safe defaults
+	    ├── agents/
+	    │   ├── architect.md             ← agent definition (commit this)
+	    │   ├── architect/
+	    │   │   └── memory.md            ← curated project memory only
+	    │   └── reviewer.md
+	    ├── rules/
+	    │   └── backend.mdc              ← optional path-scoped project rules
+	    ├── plans/
+	    │   └── migration-plan.md        ← optional durable project plans
+	    ├── skills/
+	    │   ├── documentation.md
+	    │   └── release-checklist.md
+	    └── mcps.json
+```
+
+## Qué no pertenece a `.apc/`
+
+El núcleo portable de APC no debe almacenar estado crudo de runtime.
+
+No coloques estas rutas en `.apc/`:
+
+```text
+.apc/agents/<slug>/sessions/
+.apc/sessions/
+.apc/conversations/
+.apc/messages/
+.apc/chats/
+.apc/cache/
+.apc/tmp/
+.apc/private/
+.apc/secrets/
+.apc/agents/<slug>/auto-memory.md
+.apc/plans/scratch/
+```
+
+Los runtimes mantienen esos archivos en su propio almacenamiento local. Por ejemplo, APX usa
+`~/.apx/projects/<project-id>/` para sesiones, conversaciones, mensajes, memoria local de runtime y
+archivos de runtime del proyecto, mientras que los agentes específicos de IDE usan sus propios directorios locales.
+
+## Niveles de visibilidad
+
+APC distingue cinco niveles de persistencia para el contenido de `.apc/`:
+
+| Nivel | Significado | Control de versiones |
+|---|---|---|
+| `stable` | Definiciones canónicas que rara vez cambian | Commit |
+| `project` | Contexto útil para todos los contribuidores | Commit |
+| `local` | Historial de runtime específico de la máquina | Mantener fuera de `.apc/` o gitignorear |
+| `private` | Secretos, credenciales, notas personales | Gitignore + nunca commitear |
+| `ephemeral` | Cachés, archivos temporales, artefactos de build | Gitignore |
+
+## Qué commitear
+
+```text
+AGENTS.md
+.apc/project.json
+.apc/agents/<slug>.md          ← agent definitions
+.apc/agents/<slug>/memory.md   ← optional curated memory, only if safe for team
+.apc/rules/                    ← optional project rules, including path-scoped MDC
+.apc/plans/                    ← optional durable plans safe to share
+.apc/skills/
+.apc/mcps.json                 ← without secrets
+```
+
+## Qué mantener fuera de APC
+
+```text
+Codex runtime state
+Claude Code runtime state
+OpenCode runtime state
+APX runtime state at ~/.apx/projects/<project-id>/
+local MCP process caches
+tool call transcripts
+raw session logs
+provider conversation threads
+private runtime memory
+auto-generated memories that have not been reviewed
+draft plans or scratch task notes useful only to one session
+```
+
+## `.apc/.gitignore` por defecto
+
+Los inicializadores compatibles con APC deberían escribir valores por defecto seguros. El archivo debería proteger contra estado
+accidental de runtime si herramientas más viejas o scripts manuales lo crean dentro de `.apc/`.
+
+```gitignore
+# Runtime data must not live in APC. Ignore if created by older tools.
+agents/*/sessions/
+agents/*/conversations/
+sessions/
+conversations/
+messages/
+chats/
+cache/
+tmp/
+private/
+secrets/
+*.local.json
+*.secret.json
+*.env
+*.env.*
+mcps.local.json
+migrate.md
+```
+
+Si querés publicar ejemplos sanitizados, no los pongas en rutas crudas de sesión. Preferí una ruta de documentación
+explícita:
+
+```text
+docs/examples/sessions/
+```
+
+## Privacidad y control de versiones
+
+**Regla de oro:** APC almacena conocimiento duradero del proyecto en el repositorio, no conversaciones privadas crudas,
+mensajes, sesiones ni memoria de runtime.
+
+Las sesiones crudas son propiedad del runtime y deberían quedar fuera de `.apc/`. Si un usuario explícitamente quiere compartir
+una, exportá un resumen sanitizado a los docs del proyecto o a memoria curada.
+
+Los agentes que escriben datos compatibles con APC nunca deberían commitear sesiones privadas o secretos salvo que el usuario explícitamente exporte contenido sanitizado.
+
+## Notas de diseño
+
+- `AGENTS.md` es el contrato de compatibilidad amplio en la raíz — legible por Codex, Cursor y cualquier herramienta que siga la convención.
+- `.apc/project.json` guarda metadatos estables del proyecto.
+- Las definiciones de agentes viven en `.apc/agents/<slug>.md`; opcionalmente, la memoria curada puede vivir en `.apc/agents/<slug>/memory.md`.
+- Las reglas pueden vivir en `.apc/rules/` cuando son propiedad del proyecto, especialmente las reglas `.mdc` con scope de path que las herramientas compatibles pueden proyectar hacia Cursor o sistemas de reglas específicos de Claude.
+- Los planes duraderos pueden vivir en `.apc/plans/` cuando son seguros de compartir y útiles más allá de una única sesión de runtime.
+- Las sesiones, conversaciones, mensajes y bases de datos de runtime pertenecen fuera de `.apc/`.
+- Las rutas desconocidas dentro de `.apc/` son ignoradas por los consumidores salvo que una extensión formal de APC las defina.

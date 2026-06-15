@@ -1,0 +1,46 @@
+---
+title: Skills
+description: Las skills de APC son archivos reusables de instrucciones propiedad del proyecto, referenciados por los agentes.
+---
+
+# Skills
+
+Las skills son archivos reusables de instrucciones propiedad del proyecto.
+
+## Ubicación
+
+```text
+.apc/skills/<name>.md
+```
+
+## Propósito
+
+Las skills permiten a los proyectos evitar repetir la misma guía operativa a través de muchas definiciones de agentes.
+
+Temas típicos de skills:
+
+- estilo de documentación
+- checklists de release
+- heurísticas de revisión de seguridad
+- reglas de triage de soporte
+- procedimientos de migración
+
+## Ejemplo
+
+```markdown
+# release-checklist
+
+Before shipping:
+1. Confirm tests pass.
+2. Confirm user-visible changes are documented.
+3. Confirm migration notes exist when needed.
+```
+
+## Cómo referenciar skills
+
+Los agentes pueden referenciar skills por nombre desde:
+
+- `AGENTS.md`
+- `.apc/agents/<slug>.md`
+
+El archivo de la skill sigue siendo la fuente propiedad del proyecto para el cuerpo compartido de la instrucción.

@@ -1,0 +1,44 @@
+---
+title: Metadatos del workspace
+description: APC necesita un archivo de metadatos del proyecto; el borrador de referencia actual usa .apc/project.json como ubicación canónica.
+---
+
+# Metadatos del workspace
+
+APC requiere un archivo de metadatos del proyecto dentro del directorio canónico de contexto.
+
+## Borrador actual
+
+En el borrador actual de APC y en la implementación de referencia actual, el archivo de metadatos es:
+
+```text
+.apc/project.json
+```
+
+Algunas discusiones de diseño tempranas describieron esto de forma más genérica como metadatos del workspace, razón por la cual
+esta página usa la etiqueta más amplia de "workspace".
+
+## Forma mínima
+
+```json
+{
+  "name": "My Project",
+  "version": "0.1.0",
+  "apc": "0.1.0",
+  "created": "2026-05-08T00:00:00Z"
+}
+```
+
+## Intención requerida
+
+El archivo de metadatos debería responder:
+
+- cómo se llama este proyecto
+- en qué versión del proyecto está
+- qué versión objetivo de APC espera el proyecto
+- cuándo se creó el conjunto de metadatos APC
+
+## Nota de compatibilidad
+
+Implementaciones más viejas pueden seguir escribiendo la clave de versión histórica `apf`. Los consumidores compatibles deberían
+aceptarla para migración, pero los proyectos nuevos deberían preferir `apc`.

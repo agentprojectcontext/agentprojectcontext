@@ -1,0 +1,45 @@
+---
+title: Contexto del proyecto
+description: El contexto del proyecto es la información durable que un agente necesita porque le pertenece al repositorio, no solo a una sesión puntual.
+---
+
+# Contexto del proyecto
+
+El contexto del proyecto es la información durable que explica cómo deben entender un repositorio
+los agentes y las herramientas.
+
+## Ejemplos típicos
+
+- roles de la arquitectura
+- restricciones de revisión
+- convenciones de nombres
+- prácticas de release
+- terminología de dominio
+- hechos del producto de larga duración
+
+Esta información suele redescubrirse una y otra vez en sesiones de chat, o copiarse a la
+configuración específica de cada herramienta. APC trata eso como un problema de modelado del
+proyecto.
+
+## Por qué importa
+
+Sin una capa de contexto del proyecto:
+
+- las instrucciones se desvían
+- la memoria queda privada de un único runtime
+- distintos IDEs ven distintas porciones del mismo proyecto
+- el onboarding se vuelve más lento y menos predecible
+
+Con APC, el proyecto puede exponer su contexto deseado de una manera estable e inspeccionable.
+
+## Frontera de APC
+
+El contexto del proyecto debe incluir información que siga teniendo sentido después de:
+
+- reiniciar el editor
+- cambiar de máquina
+- cambiar de proveedor de modelo
+- delegar el trabajo a otro runtime de agentes
+
+Las notas efímeras locales a una sesión, las preferencias de UI y los prompts pasajeros normalmente
+no pertenecen a APC, a menos que el proyecto decida explícitamente preservarlos.

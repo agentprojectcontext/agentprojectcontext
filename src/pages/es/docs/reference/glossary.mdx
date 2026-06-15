@@ -1,0 +1,65 @@
+---
+title: Glosario
+description: Términos y definiciones centrales de APC.
+---
+
+# Glosario
+
+## APC
+
+Agent Project Context. Una convención portable para guardar contexto de agentes a nivel del proyecto dentro de un
+repositorio.
+
+## APC Consumer
+
+Cualquier herramienta, runtime, editor o capa de automatización que lee datos de APC.
+
+## APX
+
+Capa opcional de runtime y daemon que puede consumir APC, gestionar el estado local del runtime, fusionar vistas de configuración
+de MCP y despachar agentes entre herramientas.
+
+## Agent Definition
+
+Descripción —propiedad del proyecto— del rol de un agente, su preferencia de modelo, sus skills u otros metadatos relacionados.
+
+## `AGENTS.md`
+
+Contrato de compatibilidad raíz para reglas de alcance global del repositorio, notas de stack, comandos y contexto compartido
+del proyecto.
+
+## `.apc/`
+
+Directorio canónico de APC para el contexto propiedad del proyecto.
+
+## Memory
+
+Contexto curado del proyecto, específico de un agente, almacenado en texto plano. Debería contener hechos duraderos y seguros,
+no transcripciones crudas.
+
+## Runtime State
+
+Datos locales producidos por un agente en ejecución, como sesiones, conversaciones, mensajes, cachés y salidas
+de herramientas. La memoria privada de runtime también pertenece acá. El estado de runtime va fuera de `.apc/`.
+
+## Session
+
+Registro —propiedad del runtime— de una invocación de agente o de una conversación. APC no guarda sesiones crudas en
+su núcleo portable.
+
+## Skill
+
+Archivo de instrucciones reutilizable, propiedad del proyecto, referenciado por uno o más agentes.
+
+## Project Context
+
+Información que pertenece al repositorio y debería seguir siendo significativa a través de herramientas, sesiones y
+máquinas.
+
+## Global Context
+
+Contexto que pertenece a una persona, máquina o instalación de runtime, más que a un repositorio.
+
+## MCP
+
+Model Context Protocol. Una capa de protocolo aparte usada para la integración con herramientas y servicios externos.

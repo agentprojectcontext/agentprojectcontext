@@ -1,65 +1,55 @@
-export function HomeHero() {
+import { getStrings } from '../i18n/strings'
+
+export function HomeHero({ locale = 'en' }) {
+  const t = getStrings(locale).home
   return (
     <div className="apc-hero">
-      <div className="apc-eyebrow">Standardized project context for agents</div>
-      <h1>One project. One context layer.</h1>
+      <div className="apc-eyebrow">{t.eyebrow}</div>
+      <h1>{t.title}</h1>
       <p className="apc-lead">
-        APC defines a neutral, repository-owned way to store agent-readable project context in a
-        canonical <code>.apc/</code> folder. It is designed for AI agents, editors, CLIs, and
-        developer tooling that need a shared understanding of a project.
+        {t.leadBefore}
+        <code>.apc/</code>
+        {t.leadAfter}
       </p>
     </div>
   )
 }
 
-export function HomeGrid() {
+export function HomeGrid({ locale = 'en' }) {
+  const t = getStrings(locale).home.grid
   return (
     <div className="apc-grid">
       <div className="apc-card">
-        <div className="apc-kicker">Concept</div>
-        <h3>Portable by default</h3>
-        <p>
-          APC keeps durable context in the repository instead of scattering it across tool-specific
-          folders and private runtime state.
-        </p>
+        <div className="apc-kicker">{t.portable.kicker}</div>
+        <h3>{t.portable.title}</h3>
+        <p>{t.portable.body}</p>
       </div>
       <div className="apc-card">
-        <div className="apc-kicker">Scope</div>
-        <h3>Project-level context</h3>
-        <p>
-          APC covers metadata, agent definitions, skills, curated project memory, and related
-          project conventions. It does not define runtime execution or store private runtime state.
-        </p>
+        <div className="apc-kicker">{t.scope.kicker}</div>
+        <h3>{t.scope.title}</h3>
+        <p>{t.scope.body}</p>
       </div>
       <div className="apc-card">
-        <div className="apc-kicker">Interop</div>
-        <h3>Compatible with MCP</h3>
-        <p>
-          APC and MCP solve different layers. APC standardizes project context. MCP connects agents to
-          external tools and services.
-        </p>
+        <div className="apc-kicker">{t.interop.kicker}</div>
+        <h3>{t.interop.title}</h3>
+        <p>{t.interop.body}</p>
       </div>
     </div>
   )
 }
 
-export function HomePrinciples() {
+export function HomePrinciples({ locale = 'en' }) {
+  const items = getStrings(locale).home.principles
   return (
     <ul className="apc-inline-list">
-      <li>Portable</li>
-      <li>Project-owned</li>
-      <li>Human-readable</li>
-      <li>Tool-neutral</li>
-      <li>Filesystem-first</li>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
     </ul>
   )
 }
 
-export function HomeNote() {
-  return (
-    <div className="apc-note">
-      APC documentation in this site is intentionally protocol-oriented. It does not define a
-      runtime, daemon, or vendor-specific workflow.
-    </div>
-  )
+export function HomeNote({ locale = 'en' }) {
+  const t = getStrings(locale).home
+  return <div className="apc-note">{t.note}</div>
 }

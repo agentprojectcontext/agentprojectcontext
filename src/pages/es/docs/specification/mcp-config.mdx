@@ -1,0 +1,158 @@
+---
+title: Configuración MCP
+description: APC puede incluir pistas de configuración MCP propiedad del proyecto sin reemplazar el protocolo MCP en sí.
+---
+
+# Configuración MCP
+
+APC puede incluir pistas de configuración MCP propiedad del proyecto.
+
+MCP en sí es un protocolo. APC no implementa el protocolo. APC solo le da al proyecto un lugar estable
+para indicar qué servidores MCP son esperados o útiles para este repositorio.
+
+## Archivo canónico
+
+```text
+.apc/mcps.json
+```
+
+## Propósito
+
+Este archivo le da al proyecto un único lugar local para describir los servidores MCP esperados en una forma que las herramientas
+compatibles puedan leer.
+
+**No** reemplaza a MCP. Lo complementa.
+
+Según la arquitectura oficial de MCP, una aplicación de IA actúa como host MCP, crea clientes
+MCP y conecta cada cliente a un servidor MCP. Los servidores exponen primitivas como herramientas,
+recursos y prompts sobre transportes como `stdio` o Streamable HTTP. `.apc/mcps.json` es solo
+entrada de configuración para ese proceso.
+
+## Ejemplo
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}
+```
+
+## Contenido permitido
+
+Usá `.apc/mcps.json` para expectativas portables del proyecto:
+
+- nombre del servidor
+- comando y argumentos no secretos
+- URL, cuando un MCP remoto es parte del contrato del proyecto
+- nombres de variables de entorno que el usuario debe proveer localmente
+- estado habilitado o deshabilitado, si un consumidor lo soporta
+
+No almacenes:
+
+- claves de API
+- tokens de acceso
+- tokens de refresh de OAuth
+- IDs de cuentas personales
+- headers privados
+- bearer tokens en `headers`
+- credenciales embebidas en URLs o query strings
+- IDs de sesión generados
+- rutas absolutas locales de la máquina salvo que la ruta sea intencionalmente parte del contrato del proyecto
+
+Usá placeholders para secretos. La sintaxis exacta del placeholder puede variar según el consumidor, pero el repositorio
+debe contener solo la referencia, no el valor.
+
+Preferí esto:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+No commitees esto:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_real_token_here"
+      }
+    }
+  }
+}
+```
+
+Tampoco commitees esto:
+
+```json
+{
+  "mcpServers": {
+    "private-api": {
+      "url": "https://api.example.com/mcp?token=real_token_here",
+      "headers": {
+        "Authorization": "Bearer real_token_here"
+      }
+    }
+  }
+}
+```
+
+## Seguridad en repositorios públicos
+
+Los inicializadores y consumidores de APC deberían tratar `.apc/mcps.json` como seguro de commitear solo después de validar:
+
+- rechazar secretos literales en `env`, `headers`, `url` y `args`
+- preferir `${env:NAME}` u otro placeholder explícito de entorno
+- mantener los overrides locales en `.apc/mcps.local.json` o en un archivo de configuración propiedad del runtime
+- asegurarse de que `.apc/.gitignore` ignore `*.local.json`, `*.secret.json`, `.env` y `.env.*`
+- correr el escaneo normal de secretos del repositorio antes de publicar
+
+Si un proyecto necesita un endpoint MCP remoto privado, `.apc/mcps.json` puede nombrar el endpoint y las variables
+de entorno requeridas. Las credenciales permanecen en la configuración de runtime a nivel de usuario, en un
+gestor de entorno o en un almacén de secretos administrado.
+
+## Comportamiento del consumidor
+
+Los consumidores de APC pueden:
+
+- leer `.apc/mcps.json`
+- hacer merge con archivos MCP específicos del IDE
+- preferir las entradas de APC cuando los nombres entran en conflicto
+- iniciar el proceso del servidor
+- conectarse a través de MCP como un cliente MCP real
+- exponer las herramientas descubiertas al modelo
+
+Los consumidores de APC no deberían:
+
+- tratar `.apc/mcps.json` como un almacén de transcripts
+- mutar archivos MCP específicos del IDE salvo que el usuario lo pida
+- escribir secretos dentro de `.apc/mcps.json`
+- auto-commitear `.apc/mcps.json` después de agregar un servidor sin validar los campos secretos
+- pretender que APC es un sustituto del ciclo de vida, transporte o reglas de schema de MCP
+
+## Por qué mantenerlo en APC
+
+Sin un archivo de pistas MCP propiedad del proyecto, los equipos suelen duplicar la configuración de MCP en
+ubicaciones específicas del editor. Poner la expectativa del proyecto en `.apc/mcps.json` reduce la deriva preservando MCP
+como el protocolo externo de herramientas.
+
+## Referencias
+
+- [Introducción a MCP](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [Visión general de la arquitectura MCP](https://modelcontextprotocol.io/docs/learn/architecture)

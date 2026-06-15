@@ -1,0 +1,171 @@
+---
+title: Un contexto, un nombre
+description: APC estandariza las mecánicas de contexto específicas de cada herramienta bajo un único nombre neutral — .apc — en lugar de duplicar el significado del proyecto en .claude, .codex, .cursor y carpetas similares.
+---
+
+# Un contexto, un nombre
+
+Cada runtime de agente importante termina inventando su propia carpeta de proyecto:
+
+```text
+.claude/
+.codex/
+.cursor/
+.opencode/
+.windsurf/
+```
+
+Cada una resuelve un problema parecido: darle al agente conocimiento durable sobre *este repositorio*.
+Cada una también desarrolla su propio layout, sus propios nombres de archivo y su propio modelo
+mental. El resultado no son cinco features distintos. Es el mismo contexto del proyecto copiado cinco
+veces bajo cinco nombres de proveedor.
+
+APC no agrega un sexto silo. APC le da a esa capa compartida **un único nombre neutral**: `.apc/`.
+
+## APC no es "otra carpeta de contexto"
+
+Es fácil leer APC como "otro lugar más para poner prompts". Eso no captura la idea.
+
+El contexto del proyecto ya existe. Los equipos ya escriben:
+
+- quiénes son los agentes
+- cómo debe revisarse el repo
+- qué stack y qué comandos importan
+- qué servidores MCP espera el proyecto
+- qué hechos deben sobrevivir a la próxima sesión
+
+Esa información es natural al proyecto. Le pertenece al repositorio, no a Claude, Codex o Cursor como
+productos.
+
+APC no inventa un nuevo tipo de conocimiento. APC **nombra y estructura** un conocimiento que siempre
+fue del proyecto, pero que antes quedaba atrapado dentro de directorios con marca de herramienta.
+
+```text
+Before APC:
+  project meaning → .claude/ + .codex/ + .cursor/ + ...
+
+With APC:
+  project meaning → .apc/          ← one source
+  runtime mechanics → each tool    ← projections and private state
+```
+
+El objetivo no es reemplazar cada feature de IDE. El objetivo es dejar de pedirle a cada runtime que
+sea dueño del mismo contrato del proyecto bajo un nombre de carpeta distinto.
+
+## Qué estandariza APC
+
+APC mira lo que `.claude/`, `.codex/`, `.cursor/` y similares ya hacen, y mapea las partes durables
+a un núcleo portable y pequeño:
+
+| Aspecto | Ubicación en APC | Ubicaciones típicas según la herramienta |
+| --- | --- | --- |
+| Contrato raíz del proyecto | `AGENTS.md` | `CLAUDE.md`, archivos de guía del editor |
+| Definiciones de agentes | `.apc/agents/<slug>.md` | `.claude/agents/`, config de agente del runtime |
+| Instrucciones reutilizables | `.apc/skills/<name>.md` | bloques de prompt duplicados por herramienta |
+| Reglas con scope por path | `.apc/rules/*.mdc` | `.cursor/rules/`, `.claude/rules/` |
+| Planes durables | `.apc/plans/` | UI de planificación del IDE o archivos de scratch |
+| Memoria curada del proyecto | `.apc/agents/<slug>/memory.md` | almacenes ocultos de memoria del runtime |
+| Expectativas de MCP | `.apc/mcps.json` | `.cursor/mcp.json`, `.mcp.json` de Claude, config de Codex |
+| Metadata del proyecto | `.apc/project.json` | config de herramientas dispersa |
+
+Esto es estandarización por **separación de incumbencias**:
+
+- el **significado propio del proyecto** vive en APC
+- las **mecánicas propias del runtime** quedan con el runtime
+
+Sesiones, transcripts, caches, memoria privada, configuraciones de UI y secretos no son problemas de
+APC. Quedan en `~/.codex/`, `~/.claude/`, `~/.cursor/`, `~/.apx/projects/<id>/` o el almacenamiento
+equivalente del runtime.
+
+## Fuente y proyección
+
+Los runtimes compatibles pueden conservar archivos específicos de la herramienta cuando los necesiten.
+Esos archivos deben comportarse como **proyecciones**, no como una segunda fuente de verdad.
+
+```text
+.apc/agents/reviewer.md
+        ↓ projection
+.claude/agents/reviewer.md   (if Claude Code needs its own layout)
+
+.apc/rules/api.mdc
+        ↓ projection
+.cursor/rules/api.mdc
+
+.apc/mcps.json
+        ↓ projection
+.cursor/mcp.json
+```
+
+La regla es direccional:
+
+1. APC mantiene el contrato del proyecto.
+2. Un runtime puede espejarlo o importarlo.
+3. El runtime no debe convertirse en el único lugar donde se edita el significado del proyecto.
+
+Si dos carpetas no coinciden, APC gana para el contexto compartido del proyecto.
+
+## Por qué importa un único nombre
+
+Un único nombre cambia la forma en que los equipos razonan sobre el contexto:
+
+| Con múltiples carpetas de proveedor | Con APC |
+| --- | --- |
+| "¿Actualizamos Claude *y* Cursor?" | "¿Actualizamos `.apc/`?" |
+| El contexto sigue a la última herramienta usada | El contexto sigue al repositorio |
+| El onboarding depende de qué editor se elige | El onboarding empieza en `AGENTS.md` y `.apc/` |
+| Los diffs de review son ruidosos y duplicados | Los diffs de review muestran un único contrato del proyecto |
+
+`.apc/` es intencionalmente neutral. No dice "este proyecto le pertenece a Claude" ni "este proyecto
+le pertenece a Codex". Dice **este proyecto tiene contexto legible por agentes**, y cualquier
+consumidor compatible puede leerlo.
+
+Esa neutralidad es la decisión de producto: una sola convención de filesystem, muchos runtimes, sin
+vendor lock-in para el significado del proyecto.
+
+## Lo que APC no pretende ser
+
+APC no es:
+
+- un reemplazo para cada feature de IDE
+- un mandato para borrar `.claude/` o `.cursor/` desde el día uno
+- un almacén de sesiones o un archivo de chats
+- un gestor de secretos
+- un runtime o un daemon
+
+Las carpetas de las herramientas pueden permanecer para las mecánicas que el runtime realmente posee.
+APC solo le pide a los equipos que dejen de tratar a `.claude/`, `.codex/` y `.cursor/` como tres
+proyectos separados que casualmente comparten un remoto de git.
+
+## Adopción práctica
+
+Un repositorio que adopta APC suele verse así:
+
+```text
+MyProject/
+├── AGENTS.md                 ← root contract, readable everywhere
+└── .apc/                     ← structured project context
+    ├── project.json
+    ├── agents/
+    ├── skills/
+    ├── rules/
+    ├── plans/
+    └── mcps.json
+```
+
+Pueden seguir existiendo carpetas opcionales de herramientas a su lado. Deberían ir achicándose con
+el tiempo a medida que el significado duplicado del proyecto se mueve hacia APC.
+
+Para un camino de migración paso a paso, ver
+[Migrar desde contexto específico de IDE](/es/docs/guides/migrate-from-ide-specific-context).
+
+## Resumen
+
+APC estandariza las mecánicas que `.claude/`, `.codex/`, `.cursor/` y sistemas similares ya
+aproximan. Pero APC no es "una carpeta de contexto" en el sentido de un volcado de prompts más.
+
+APC es la **capa natural de contexto del proyecto** con un único nombre que todo sistema puede
+compartir: `.apc/`.
+
+El significado del proyecto le pertenece al repositorio. La historia del runtime le pertenece al
+runtime. APC existe para que los equipos no tengan que elegir un nombre de proveedor cada vez que
+quieren que un agente entienda el proyecto.

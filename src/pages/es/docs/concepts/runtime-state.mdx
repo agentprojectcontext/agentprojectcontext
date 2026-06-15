@@ -1,0 +1,91 @@
+---
+title: Estado del runtime
+description: APC separa el contexto portable del proyecto de las sesiones, transcripts, caches y otros estados que le pertenecen al runtime.
+---
+
+# Estado del runtime
+
+El estado del runtime es todo lo que se produce mientras un agente se ejecuta.
+
+APC deliberadamente mantiene el estado del runtime fuera de `.apc/`.
+
+## Qué cuenta como estado del runtime
+
+El estado del runtime incluye:
+
+- sesiones crudas
+- hilos de conversación del proveedor
+- transcripts de llamadas a herramientas
+- notas temporales de scratch
+- bases de datos e índices locales
+- logs de mensajes
+- caches del daemon
+- metadata específica del IDE
+- memoria privada del runtime
+
+Estos datos suelen contener prompts sensibles, credenciales pegadas por error, datos de clientes,
+paths locales o razonamientos intermedios. No deberían viajar con el repositorio a menos que una
+persona los exporte y los sanee explícitamente.
+
+La memoria de APC es distinta: `.apc/agents/<slug>/memory.md` está pensado solo para hechos curados
+del proyecto que sean seguros para el equipo. No es un volcado de memoria privada del agente.
+
+## Dónde vive el estado del runtime
+
+Cada runtime debería ser dueño de su propio directorio local de estado.
+
+Ejemplos:
+
+```text
+~/.codex/...                  ← Codex sessions and transcripts
+~/.claude/...                 ← Claude Code sessions and transcripts
+~/.config/opencode/...        ← OpenCode runtime state
+~/.apx/projects/<project-id>/ ← APX runtime state
+```
+
+Los paths exactos son específicos de cada runtime. APC solo exige que los datos crudos del runtime
+no vivan en el contrato portable del proyecto en `.apc/`.
+
+APX respeta esta división manteniendo sesiones, conversaciones, mensajes, memoria local del runtime
+y archivos runtime del proyecto bajo `~/.apx/projects/<project-id>/`, no dentro del `.apc/` del
+repositorio.
+
+## Qué puede volver a APC
+
+Solo el conocimiento curado del proyecto debería volver a APC.
+
+Buenos candidatos:
+
+- decisiones durables
+- restricciones de arquitectura
+- responsabilidades de los agentes
+- workflows reutilizables
+- hechos seguros y útiles para todos los contribuidores
+
+Malos candidatos:
+
+- transcripts completos
+- salida cruda de comandos
+- datos de clientes
+- secretos
+- notas personales
+- trazas de razonamiento específicas del modelo
+
+## Patrón de resumen de sesión
+
+Al final de una tarea, un runtime puede producir un resumen corto. Ese resumen solo puede usarse
+para actualizar la memoria del proyecto si es útil, seguro y durable.
+
+Flujo recomendado:
+
+1. Ejecutar el agente en su propio runtime.
+2. Mantener el transcript crudo en el almacenamiento local de ese runtime.
+3. Extraer las decisiones durables a mano o mediante un ayudante aprobado.
+4. Escribir en APC solo conocimiento del proyecto ya saneado.
+
+## Por qué esto importa
+
+Si las sesiones viven dentro de `.apc/`, distintos IDEs pueden leer accidentalmente datos sensibles
+de los demás. También pueden commitear historia privada al repositorio. Mover las sesiones fuera de
+APC le da a cada IDE su propio límite de privacidad y a la vez preserva un único contrato compartido
+del proyecto.

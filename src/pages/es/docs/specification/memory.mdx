@@ -1,0 +1,112 @@
+---
+title: Memoria
+description: Los archivos de memoria de APC permiten a los proyectos preservar contexto duradero específico del agente en texto plano.
+---
+
+# Memoria
+
+La memoria en APC es contexto duradero y curado, atado a un agente del proyecto.
+
+No es historial crudo de chat, memoria local del runtime ni estado privado del runtime.
+
+## Ubicación
+
+```text
+.apc/agents/<slug>/memory.md
+```
+
+Este archivo es opcional. Usalo solo para información segura y útil de compartir con cualquiera que pueda
+leer el repositorio.
+
+## Por qué markdown
+
+APC mantiene la memoria legible por humanos por defecto:
+
+- fácil de revisar
+- fácil de comparar (diff)
+- fácil de migrar
+- no queda atrapada en la base de datos de un único runtime
+
+## Forma recomendada
+
+```markdown
+# Memory — reviewer
+
+## Identity
+- Reviews behavior changes and risks
+
+## Project facts
+- Prefer findings-first reviews
+
+## Durable decisions
+- API compatibility matters more than internal file layout during v0.1 migration
+
+## Open project context
+- Tracking docs migration for APC
+```
+
+## Guía de scope
+
+Una buena memoria APC contiene información que se mantiene útil entre sesiones y entre herramientas:
+
+- responsabilidades estables del proyecto
+- restricciones recurrentes
+- hechos del dominio de larga vida
+- expectativas duraderas del equipo
+- decisiones y su razonamiento
+- pendientes abiertos que importan más allá de una sesión
+
+No pongas esto en la memoria APC:
+
+- historial crudo de sesión
+- transcripts completos
+- memorias autogeneradas que no fueron revisadas
+- datos de clientes
+- credenciales
+- preferencias personales
+- rutas locales útiles solo en una máquina
+- output del modelo sin revisar
+
+La memoria local del runtime pertenece al almacenamiento del runtime, no a `.apc/`.
+
+Por ejemplo, APX mantiene la memoria de runtime, sesiones, mensajes, conversaciones y archivos de runtime del proyecto
+bajo `~/.apx/projects/<project-id>/`. APC mantiene solo memoria curada del proyecto que sea segura de commitear.
+
+Esto significa que un agente puede tener dos capas de memoria diferentes:
+
+| Capa de memoria | Ubicación | ¿Commitear? |
+|---|---|---|
+| Memoria curada del proyecto | `.apc/agents/<slug>/memory.md` | Sí, solo si es segura para el equipo |
+| Memoria de runtime/privada | Almacenamiento propiedad del runtime como `~/.apx/projects/<project-id>/` | No |
+
+Si un hecho es privado, personal, temporal o no revisado, manténlo en la memoria del runtime. Si es conocimiento
+duradero del proyecto útil para futuros contribuidores, sanitízalo y colocálo en la memoria APC.
+
+## Memoria del proyecto vs memoria del runtime
+
+| | `memory.md` de APC | Memoria/sesiones del runtime |
+|---|---|---|
+| Visibilidad | Compartida con el proyecto | Local o privada del runtime |
+| Ubicación | `.apc/agents/<slug>/memory.md` | Directorio propiedad del runtime como `~/.apx/projects/<project-id>/` |
+| Control de versiones | Commitear solo si es seguro | Nunca commitear por defecto |
+| Escrita por | Humano o agente luego de curación | Runtime |
+| Propósito | Hechos y decisiones duraderas | Historial completo, estado de borrador, notas privadas |
+
+El patrón previsto: los agentes corren sesiones localmente, luego extraen decisiones y hechos significativos hacia
+`memory.md` solo cuando esos hechos son seguros para todo el proyecto. La sesión queda local. La memoria
+curada del proyecto viaja con el repo.
+
+## Niveles de persistencia
+
+APC define cinco niveles de visibilidad para el contenido de `.apc/`:
+
+| Nivel | Ejemplos | Comportamiento por defecto en VCS |
+|---|---|---|
+| `stable` | Definiciones de agentes, skills, reglas | Commit |
+| `project` | `memory.md`, `AGENTS.md`, `project.json` | Commit |
+| `local` | Sesiones de runtime, chats, cachés | Fuera de `.apc/` o gitignoreado |
+| `private` | Secretos, credenciales, `*.secret.json` | Gitignoreado, nunca commitear |
+| `ephemeral` | `tmp/`, artefactos de build | Gitignoreado |
+
+`memory.md` tiene visibilidad `project` solo luego de la curación. Las sesiones crudas son `local` y nunca
+se commitean salvo que el usuario explícitamente exporte contenido sanitizado a un documento de proyecto separado.

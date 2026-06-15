@@ -148,3 +148,26 @@ a {
   padding: 0.2rem 0 0.2rem 1rem;
   margin: 1.25rem 0;
 }
+
+/* Locale + theme switches are rendered in the top navbar (see theme.config.tsx
+ * navbar.extraContent). Hide the duplicate copies the docs theme renders in
+ * the sidebar footer and at the bottom of the page footer. */
+.nextra-sidebar-footer {
+  display: none !important;
+}
+footer > div:first-child:has(> button[title="Change language"]),
+footer > div:first-child:has(> button[title="Change theme"]) {
+  display: none !important;
+}
+
+/* Custom locale popover (CodeLocaleSwitch). Inline styles handle layout; this
+ * controls the background + text color across light/dark themes. */
+.apc-locale-pop {
+  background: #ffffff;
+  color: #1f1f1f;
+}
+.dark .apc-locale-pop {
+  background: #1c1c1c;
+  color: #f1f1f1;
+  border-color: color-mix(in srgb, #ffffff 14%, transparent) !important;
+}

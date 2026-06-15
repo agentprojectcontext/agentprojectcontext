@@ -1,0 +1,125 @@
+---
+title: Agregar APC a tu proyecto
+description: Una guía práctica para agregar contexto APC a un repositorio existente.
+---
+
+# Agregar APC a tu proyecto
+
+Esta guía muestra un layout mínimo de repositorio compatible con APC.
+
+## 1. Crear el contrato raíz
+
+Creá `AGENTS.md` en la raíz del repositorio:
+
+```markdown
+# Project Context
+
+## Overview
+
+This project maintains a backend API and migration workflow.
+
+## Rules
+
+- Keep public API compatibility during migrations.
+- Write concise technical documentation for interface changes.
+- Run the repository test command before merge.
+
+## APC Context
+
+Structured agent definitions live in `.apc/agents/*.md`.
+Reusable instructions live in `.apc/skills/`.
+Path-scoped rules live in `.apc/rules/`.
+```
+
+## 2. Crear el directorio APC
+
+```text
+.apc/
+```
+
+## 3. Agregar metadatos del proyecto
+
+Creá `.apc/project.json`:
+
+```json
+{
+  "name": "My Project",
+  "version": "0.1.0",
+  "apc": "0.1.0",
+  "created": "2026-05-08T00:00:00Z"
+}
+```
+
+## 4. Agregar al menos una skill
+
+Creá `.apc/skills/documentation.md`:
+
+```markdown
+# documentation
+
+Write protocol and specification text in a neutral, technical tone.
+```
+
+## 5. Agregar reglas si son necesarias
+
+Usá `AGENTS.md` para reglas de alcance global del repositorio. Para reglas con alcance por path, creá `.apc/rules/backend.mdc`:
+
+```mdc
+---
+description: Backend API rules
+globs:
+  - "src/api/**/*.ts"
+alwaysApply: false
+---
+
+- Validate request input at the route boundary.
+```
+
+## 6. Agregar planes duraderos si son necesarios
+
+Creá `.apc/plans/migration-plan.md` solo cuando el plan sea seguro de compartir y útil más allá de
+una única sesión de runtime.
+
+## 7. Agregar archivos de agente estructurados
+
+```text
+.apc/agents/architect.md
+```
+
+Esto da a las herramientas compatibles una ubicación estable y legible por máquina para los metadatos del agente.
+
+Frontmatter recomendado:
+
+```markdown
+---
+name: architect
+model: inherit
+description: Defines architecture and migration strategy.
+skills: documentation
+---
+```
+
+## 8. Agregar memoria curada del proyecto si es necesaria
+
+La memoria es opcional. Agregala solo para hechos curados que sea seguro compartir con cualquiera que pueda leer el
+repositorio.
+
+Creá `.apc/agents/architect/memory.md`:
+
+```markdown
+# Memory — architect
+
+## Identity
+- Owns architecture and specification clarity
+```
+
+## 9. Dejá las sesiones con su runtime
+
+Tu IDE, CLI o el daemon de APX guarda el estado crudo de runtime en su propio almacenamiento local. APX, por ejemplo,
+guarda sesiones, conversaciones, mensajes, memoria local de runtime y archivos de runtime del proyecto bajo
+`~/.apx/projects/<project-id>/`. Si una sesión produce conocimiento duradero del proyecto, extraé un hecho corto y
+saneado a la memoria APC o a los docs.
+
+## Resultado
+
+Ahora tenés una capa portable de contexto de proyecto que puede viajar junto con el repositorio.

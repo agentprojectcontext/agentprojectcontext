@@ -1,0 +1,88 @@
+---
+title: Agentes
+description: APC usa AGENTS.md como contrato raíz del proyecto y .apc/agents para las definiciones estructuradas de agentes.
+---
+
+# Agentes
+
+APC usa `AGENTS.md` como contrato raíz del proyecto para el contexto a nivel de todo el repositorio.
+Las definiciones estructuradas de agentes viven en `.apc/agents/`.
+
+## Contrato raíz
+
+En la raíz del repositorio:
+
+```text
+AGENTS.md
+```
+
+Estructura típica:
+
+```markdown
+# Project Context
+
+## Overview
+
+This project maintains a backend API and migration workflow.
+
+## Rules
+
+- Keep public API compatibility during migrations.
+- Write concise technical documentation for interface changes.
+- Run the repository test command before merge.
+
+## APC Context
+
+Structured agent definitions live in `.apc/agents/*.md`.
+Reusable instructions live in `.apc/skills/`.
+Path-scoped rules live in `.apc/rules/`.
+```
+
+## Archivos estructurados por agente
+
+Las definiciones de agentes en APC usan archivos estructurados:
+
+```text
+.apc/agents/<slug>.md
+```
+
+Ejemplo:
+
+```markdown
+---
+name: architect
+model: inherit
+description: Defines architecture and migration strategy.
+skills: documentation, release-checklist
+color: indigo
+emoji: 🏛️
+vibe: Designs systems that survive the team that built them. Every decision has a trade-off — name it.
+---
+
+Prioritize durable interfaces and migration safety.
+```
+
+## Campos requeridos y opcionales
+
+Frontmatter recomendado:
+
+| Campo | Requerido | Propósito |
+|---|---:|---|
+| `name` | Sí | Nombre o slug estable del agente |
+| `model` | Sí | Usar `inherit` salvo que el proyecto realmente requiera un modelo específico |
+| `description` | Sí | Disparador de activación semántica y resumen de la responsabilidad |
+| `is_background` | No | Si los runtimes compatibles pueden ejecutar el agente de forma asíncrona |
+| `skills` | No | Skills de APC que el agente usa habitualmente |
+| `color`, `emoji`, `vibe` | No | Pistas de UI/personalidad para los runtimes que las soporten |
+
+APC no debería hacer del modelo de un proveedor el valor por defecto. Un valor específico de modelo se permite solo cuando
+es parte del contrato del proyecto. En otros casos, usá `inherit` y dejá que Codex, Claude Code, Cursor, APX
+u otro runtime elija su valor por defecto configurado.
+
+## Relación
+
+- `AGENTS.md` es la superficie amplia del proyecto en la raíz.
+- `.apc/agents/<slug>.md` es la definición estructurada del agente.
+
+Los consumidores compatibles leen `AGENTS.md` para las reglas a nivel del repositorio y `.apc/agents/<slug>.md` para
+los metadatos específicos del agente.

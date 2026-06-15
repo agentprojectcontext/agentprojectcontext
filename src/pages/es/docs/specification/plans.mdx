@@ -1,0 +1,74 @@
+---
+title: Planes
+description: Los planes de APC preservan artefactos duraderos de planificación del proyecto sin convertir el trabajo de borrador del runtime en estado del repositorio.
+---
+
+# Planes
+
+APC puede almacenar planes duraderos del proyecto cuando son seguros de compartir y útiles más allá de una sola sesión.
+
+## Ubicación
+
+```text
+.apc/plans/
+```
+
+Ejemplos:
+
+```text
+.apc/plans/auth-migration.md
+.apc/plans/release-hardening.md
+.apc/plans/cursor-checkout-flow.md
+```
+
+## Qué pertenece a los planes
+
+Los buenos planes APC contienen:
+
+- planes de implementación aprobados o útiles para trabajo futuro
+- planes de migración
+- planes de release
+- resúmenes de investigación con próximos pasos
+- decisiones y restricciones abiertas
+
+No almacenes:
+
+- notas privadas de borrador
+- planes crudos de chat copiados de una sesión
+- datos de clientes
+- credenciales
+- estado de tareas solo local
+- trazas de razonamiento del modelo
+
+## Forma recomendada
+
+```markdown
+---
+title: Auth migration
+status: active
+owner: architect
+updated: 2026-06-08
+---
+
+# Auth migration
+
+## Goal
+- Move token validation to the gateway.
+
+## Constraints
+- Preserve existing session cookies during migration.
+
+## Steps
+- Add gateway validation middleware.
+- Add compatibility tests.
+- Remove duplicate service-level checks after rollout.
+```
+
+## Relación con los planes de Cursor
+
+Cursor u otro IDE puede crear artefactos de planificación durante el trabajo. Si un plan se vuelve propiedad del proyecto,
+seguro y duradero, copiálo o tradúcelo a `.apc/plans/`. Mantené el estado transitorio de UI de planificación y
+el trabajo de borrador de sesión en el runtime que lo creó.
+
+APC es la fuente del proyecto. Pueden seguir existiendo archivos específicos de la herramienta como proyecciones cuando un runtime los
+necesita.

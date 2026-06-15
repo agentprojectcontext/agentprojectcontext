@@ -1,0 +1,120 @@
+---
+title: Migrar desde contexto específico del IDE
+description: Mové el contexto de agentes duplicado fuera de carpetas específicas de cada herramienta hacia una capa APC compartida.
+---
+
+# Migrar desde contexto específico del IDE
+
+El camino más común de adopción de APC es la migración desde estado fragmentado y específico de cada editor.
+
+## Punto de partida típico
+
+Un proyecto puede tener contexto disperso en:
+
+- `.claude/`
+- `.cursor/`
+- `.windsurf/`
+- `.codex/`
+- `.opencode/`
+
+## Estrategia de migración
+
+### 1. Inventariar el contexto duradero
+
+Separá el significado que pertenece al proyecto del estado local del runtime.
+
+Pertenecen al proyecto:
+
+- roles de agentes
+- instrucciones estables
+- reglas con alcance por path
+- workflows reutilizables
+- planes duraderos
+- memoria curada del proyecto
+- expectativas de MCP sin secretos
+
+Pertenecen al runtime local:
+
+- API keys
+- alias personales
+- preferencias de UI
+- paths locales de la máquina
+- sesiones crudas
+- transcripciones del proveedor
+- logs de llamadas a herramientas
+- almacenes locales de mensajes
+- memoria privada de runtime
+- bases de datos de runtime
+- auto-memorias no revisadas
+- planes de borrador útiles solo dentro de una sesión
+
+### 2. Consolidar las reglas raíz del proyecto
+
+Mové las reglas de alcance global del repositorio, notas de stack, comandos y política de testing a `AGENTS.md`.
+
+### 3. Mover las definiciones de agentes
+
+Mové las definiciones de agentes compartidas a `.apc/agents/<slug>.md`.
+
+### 4. Extraer instrucciones reutilizables
+
+Mové los bloques de instrucciones repetidos a `.apc/skills/`.
+
+### 5. Mover reglas según su alcance
+
+Usá `AGENTS.md` para reglas raíz que deberían aplicarse en todos lados. Mové las reglas con alcance por path a
+`.apc/rules/`, preferentemente como archivos compatibles con MDC cuando necesiten `globs`.
+
+### 6. Preservar planes duraderos
+
+Mové los planes que pertenecen al proyecto a `.apc/plans/` solo cuando sean seguros de compartir y útiles más allá de una
+única sesión de runtime. Dejá el estado privado de planificación de borrador con el IDE o runtime que lo creó.
+
+### 7. Crear archivos curados de memoria del proyecto
+
+Mové solo los hechos curados y de larga vida desde el historial de chat o almacenes ocultos de runtime a
+`.apc/agents/<slug>/memory.md`.
+
+### 8. Agregar hints de MCP solo si pertenecen al proyecto
+
+Si el proyecto espera ciertos servidores MCP, documentalos en `.apc/mcps.json`.
+
+Mantené los secretos en el entorno del usuario, en la configuración del runtime, o en un gestor de secretos administrado. No commitees
+tokens literales en `env`, `headers`, URLs, query strings ni argumentos.
+
+### 9. Dejar las sesiones con su runtime
+
+Comportamiento recomendado:
+
+- Codex guarda las sesiones de Codex en el almacenamiento de Codex
+- Claude Code guarda las sesiones de Claude en el almacenamiento de Claude
+- OpenCode guarda el estado de OpenCode en el almacenamiento de OpenCode
+- APX guarda sesiones, mensajes, conversaciones, memoria local de runtime y archivos de runtime del proyecto
+  en `~/.apx/projects/<project-id>/`
+
+Si el proyecto necesita continuidad, escribí un resumen corto y saneado de la decisión en la memoria APC o en los docs.
+
+## Fuente vs proyección
+
+APC debería ser la fuente, propiedad del proyecto, del contexto compartido. Los archivos específicos de herramienta pueden seguir existiendo como
+proyecciones del runtime.
+
+| Área de la herramienta | Fuente APC | Proyección específica de la herramienta |
+|---|---|---|
+| Reglas raíz del proyecto | `AGENTS.md` | `CLAUDE.md` importando `AGENTS.md`, o guía específica del runtime |
+| Definiciones de agentes | `.apc/agents/<slug>.md` | `.claude/agents/`, configuración de agentes del runtime de Codex/Cursor/APX |
+| Reglas con alcance por path | `.apc/rules/*.mdc` | `.cursor/rules/`, `.claude/rules/` |
+| Planes duraderos | `.apc/plans/` | UI/archivos de planificación de Cursor o IDE cuando se necesite |
+| Expectativas de MCP | `.apc/mcps.json` | `.cursor/mcp.json`, `.mcp.json` de Claude, configuración MCP de Codex/APX |
+| Memoria curada del proyecto | `.apc/agents/<slug>/memory.md` | Importada o leída por el runtime compatible |
+| Memoria privada/de runtime | ninguna | `~/.codex/`, `~/.claude/`, `~/.cursor/`, `~/.apx/projects/<id>/` |
+
+El contexto del proyecto se mueve a APC; la mecánica del runtime se queda en el runtime.
+
+## Mantené los archivos específicos de la herramienta donde se necesiten
+
+APC no requiere borrar cada carpeta específica de herramienta. El objetivo es dejar de duplicar el mismo
+significado del proyecto en todas ellas.
+
+Mantené los archivos específicos de la herramienta cuando contengan mecánica de runtime, ajustes de UI o estado privado. Quitalos
+o achicalos cuando solo dupliquen significado del proyecto ya representado por APC.

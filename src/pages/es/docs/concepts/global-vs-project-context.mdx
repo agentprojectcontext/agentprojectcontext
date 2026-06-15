@@ -1,0 +1,50 @@
+---
+title: Contexto global vs contexto del proyecto
+description: APC distingue el contexto que pertenece al proyecto del contexto global del usuario o del runtime.
+---
+
+# Contexto global vs contexto del proyecto
+
+No todo el contexto de un agente pertenece al repositorio.
+
+APC es específicamente para contexto a nivel proyecto. Debe mantenerse separado del estado global
+del usuario o del runtime.
+
+## Contexto del proyecto
+
+El contexto del proyecto viaja con el repositorio.
+
+Ejemplos:
+
+- metadata del proyecto
+- roles de agentes
+- skills reutilizables
+- memoria curada del proyecto
+- hints de MCP específicos del proyecto
+
+## Contexto global
+
+El contexto global pertenece a una cuenta de usuario, a una estación de trabajo o a una instalación
+de runtime.
+
+Ejemplos:
+
+- preferencias personales de escritura aplicables a todos los proyectos
+- API keys locales a la máquina
+- herramientas instaladas globalmente
+- preferencias de UI del editor
+- alias personales no relacionados con un repositorio puntual
+- memoria privada del runtime
+
+## Por qué la separación ayuda
+
+Si el contexto global y el del proyecto se mezclan libremente:
+
+- los repositorios se vuelven menos portables
+- los secretos se filtran con más facilidad
+- los contribuidores no pueden distinguir qué es compartido
+- el comportamiento de las herramientas se vuelve más difícil de reproducir
+
+APC propone una regla simple:
+
+> Si otro contribuidor que clona el repositorio debería heredarlo, probablemente pertenece a APC.

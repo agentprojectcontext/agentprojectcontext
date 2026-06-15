@@ -1,0 +1,109 @@
+---
+title: Introducción
+description: APC es una convención portable para almacenar contexto de proyecto destinado a agentes de IA, IDEs y herramientas de desarrollo.
+---
+
+# Introducción
+
+Cada herramienta importante de IA para código — Claude Code, Codex, Cursor, Windsurf, OpenCode — inventa
+su propia carpeta de proyecto: `.claude/`, `.codex/`, `.cursor/`, `.windsurf/`. Todas almacenan el mismo tipo
+de conocimiento: qué agentes existen, cuáles son las reglas del proyecto, qué skills y qué servidores MCP
+importan. El resultado es el mismo contexto duplicado bajo muchos nombres de vendor.
+
+APC, Agent Project Context, es una propuesta para que esas herramientas converjan en un único nombre neutral: `.apc/`.
+
+La misión no es que los developers mantengan una carpeta más. La misión es que los vendors de
+herramientas adopten `.apc/` como su default nativo, reemplazando sus propios directorios con marca.
+APX es el runtime de referencia que habilita esto hoy, antes de que exista soporte nativo de los vendors.
+
+APC responde una pregunta concreta:
+
+> ¿Qué debería conocer todo agente compatible cuando entra a este proyecto?
+
+APC no es un agent runner, ni una base de datos, ni un daemon, ni un plugin de IDE, ni un store de transcripts
+de chat. Es la capa de contexto propiedad del proyecto que cualquier herramienta compatible puede leer antes
+de empezar a trabajar.
+
+<figure className="apc-flow-figure">
+  <img
+    src="/images/apc-context-flow.webp"
+    alt="APC como capa de contexto de proyecto compartida entre aplicaciones de IA y los datos, conocimiento, herramientas e integraciones del proyecto."
+    width="1280"
+    height="721"
+  />
+</figure>
+
+## La separación que APC impone
+
+Los sistemas de agentes suelen mezclar tres cosas distintas:
+
+- contrato del proyecto: reglas durables, skills, notas de arquitectura, expectativas de MCP
+- definiciones de agentes: roles, descripciones de activación, herencia de modelo, skills
+- estado de runtime: sesiones, conversaciones, output de herramientas, cachés, memoria privada de runtime, threads del proveedor
+- configuración privada: API keys, tokens, paths locales, preferencias personales
+
+APC mantiene el contrato del proyecto y las definiciones estructuradas de agentes en el repositorio.
+El estado de runtime y la configuración privada quedan afuera del repositorio, propiedad del IDE, CLI,
+daemon o máquina del usuario que los produjo.
+
+## Objetivos
+
+- reducir contexto duplicado entre carpetas específicas de cada IDE
+- mantener el contexto durable cerca del código
+- hacer que el contexto sea inspeccionable, revisable y versionable
+- proveer una capa neutral para agentes, IDEs y automatización de desarrollo
+- evitar que sesiones crudas y output privado de herramientas se commiteen por accidente
+- permitir que distintos runtimes consuman el mismo contrato de proyecto sin compartir transcripts sensibles
+
+## Directorio canónico
+
+El directorio canónico del repositorio es:
+
+```text
+.apc/
+```
+
+El contenido típico de APC incluye:
+
+- metadatos del proyecto
+- definiciones de agentes
+- reglas, incluyendo reglas opcionales con scope de path
+- planes de proyecto durables
+- skills
+- memoria curada del proyecto, solo cuando es seguro compartirla
+- hints opcionales de configuración de MCP, sin secretos
+
+El contenido típico de APC NO incluye:
+
+- sesiones de chat crudas
+- threads de conversación de proveedores
+- logs de tool calls
+- API keys o bearer tokens
+- tokens OAuth, headers privados o credenciales en URLs de MCP
+- memorias automáticas sin revisar
+- planes privados de scratch
+- preferencias personales de un IDE
+
+## Relación con herramientas existentes
+
+APC está diseñado para coexistir con:
+
+- `AGENTS.md`
+- carpetas específicas de IDEs
+- runtimes de agentes locales u hospedados
+- registries de MCP y servidores de herramientas
+
+El objetivo no es prohibir configuración específica de herramientas. El objetivo es dejar de copiar
+el mismo significado de proyecto en `.claude/`, `.cursor/`, `.codex/`, `.opencode/` y otros lugares
+específicos de runtime. Mirá [Un contexto, un nombre](/es/docs/concepts/one-context-one-name) para el razonamiento completo.
+
+Cada IDE o runtime puede seguir manteniendo sus propias sesiones y transcripts. Esa separación es intencional:
+las sesiones suelen contener prompts privados, credenciales pegadas por error, datos de producción o
+detalles de clientes. APC debería exponer el significado durable del proyecto, no cada conversación
+que ocurrió cerca del proyecto.
+
+APC puede ser la fuente del significado compartido del proyecto mientras los runtimes mantienen
+los archivos de proyección que necesitan. Por ejemplo, `.apc/rules/*.mdc` puede proyectarse a
+`.cursor/rules/`, y `.apc/mcps.json` puede proyectarse a `.cursor/mcp.json` o a otra config de MCP
+específica del runtime. Esas proyecciones no deberían convertirse en stores de secretos ni en stores
+de sesiones crudas.

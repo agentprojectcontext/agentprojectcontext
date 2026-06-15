@@ -1,0 +1,42 @@
+---
+title: APX
+description: APX es el runtime de referencia que conecta las herramientas de IA actuales con .apc/ hoy, antes de que exista soporte nativo de los proveedores.
+---
+
+# APX
+
+APC es un protocolo. APX es el runtime de referencia que vuelve usable ese protocolo hoy.
+
+> APX es a APC lo que un SDK de un lenguaje es a la especificación de un protocolo.
+
+## Por qué APX importa para la adopción de APC
+
+La misión de APC es que las herramientas de IA — Claude Code, Codex, Cursor, Windsurf — lean `.apc/` de forma
+nativa como su directorio de contexto por defecto. Hasta que exista ese soporte nativo de los proveedores, APX cubre la brecha.
+
+APX instala **skills** en runtimes compatibles. Esas skills le enseñan a herramientas como Claude Code cómo
+leer `.apc/`, qué agentes existen, qué skills aplican y cómo tratar `.apc/` como la fuente
+de contexto del proyecto. Así es como podés impulsar la adopción de APC hoy — sin esperar a que cada proveedor
+lance soporte nativo.
+
+## Qué hace APX por la adopción de APC
+
+- Instala skills con conciencia de APC en Claude Code, Codex y otros runtimes para que traten `.apc/` como
+  la fuente de contexto del proyecto
+- Mantiene el estado del runtime (sesiones, memoria, mensajes) fuera de `.apc/` bajo `~/.apx/`
+- Provee la capa operacional local (daemon, CLI) que APC deliberadamente evita definir
+
+## APX no es APC
+
+APC define lo que vive en el repositorio. APX define lo que corre localmente.
+
+Las sesiones, conversaciones, mensajes y cachés de runtime son asuntos de APX. Se quedan en `~/.apx/`
+y nunca se commitean. La carpeta `.apc/` contiene solo significado duradero del proyecto — definiciones
+de agentes, skills, reglas, memoria curada — que es seguro de revisar y versionar.
+
+## Documentación completa de APX
+
+El daemon, la CLI, los runtimes, los engines, Telegram, las routines y todos los detalles operacionales viven en el repositorio
+y la documentación de APX:
+
+- Repo de APX: [agentprojectcontext/apx](https://github.com/agentprojectcontext/apx)

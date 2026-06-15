@@ -16,6 +16,10 @@ const computedBasePath =
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
+  i18n: {
+    locales: ['en', 'es'],
+    defaultLocale: 'en'
+  },
   images: {
     unoptimized: true
   },

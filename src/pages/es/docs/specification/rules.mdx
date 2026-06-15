@@ -1,0 +1,75 @@
+---
+title: Reglas
+description: Las reglas de APC definen guías reusables del proyecto, incluyendo reglas MDC con scope de path que las herramientas compatibles pueden proyectar hacia sistemas de reglas específicos del IDE.
+---
+
+# Reglas
+
+Las reglas son instrucciones duraderas que guían el comportamiento del agente para un proyecto.
+
+APC soporta dos superficies de reglas:
+
+- `AGENTS.md` para el contrato raíz del proyecto
+- `.apc/rules/` para reglas del proyecto reusables o con scope de path
+
+## Reglas raíz
+
+Usá `AGENTS.md` para las instrucciones que todo agente compatible debería ver cuando entra al repositorio:
+
+- límites de seguridad
+- requisitos de build y test
+- estándares de código
+- convenciones a nivel del repositorio
+- reglas que deberían aplicarse independientemente del path del archivo
+
+Esto hace de `AGENTS.md` la superficie amplia, directa y total de reglas del proyecto.
+
+## Reglas con scope de path
+
+Usá `.apc/rules/` para reglas que deberían cargarse solo para partes específicas del repositorio o tareas
+específicas.
+
+Tipos de archivo recomendados:
+
+```text
+.apc/rules/backend.mdc
+.apc/rules/frontend.mdc
+.apc/rules/security-review.md
+```
+
+Preferí frontmatter estilo MDC cuando una regla tiene scope de path:
+
+```mdc
+---
+description: Backend API rules
+globs:
+  - "src/api/**/*.ts"
+alwaysApply: false
+---
+
+- Validate request input at the route boundary.
+- Keep database writes inside service functions.
+```
+
+Los consumidores compatibles pueden proyectar `.apc/rules/*.mdc` hacia `.cursor/rules/` de Cursor, `.claude/rules/` de
+Claude u otro sistema de reglas específico de runtime. APC sigue siendo la fuente propiedad del proyecto.
+
+## Reglas vs skills
+
+Usá la superficie más chica que coincida con la intención:
+
+| Intención | Ubicación en APC |
+|---|---|
+| Aplica a todo el repositorio | `AGENTS.md` |
+| Aplica a ciertos paths o tareas | `.apc/rules/` |
+| Procedimiento reusable que un agente puede invocar | `.apc/skills/` |
+| Política amplia para humanos | docs del repositorio |
+
+Las reglas deberían mantenerse concisas, concretas y revisables. Evitá volcar transcripts largos, razonamiento del
+modelo u output generado sin revisar dentro de las reglas.
+
+## Dirección futura
+
+Las reglas de APC pueden evolucionar sin requerir que toda herramienta lea `.apc/` de forma nativa. Un runtime puede mantener sus
+propios archivos para ejecución, mientras `.apc/rules/` sigue siendo la fuente estable del proyecto que previene guía
+duplicada o desactualizada.
