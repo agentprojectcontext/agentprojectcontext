@@ -10,6 +10,5 @@ pnpm-debug.log*
 .apc/routines.json
 .apc/agents/**/*
 src/pages/docs-md
-src/pages/en/docs-md
-src/pages/es/docs-md
+src/_archive-docs-md
 tsconfig.tsbuildinfo
