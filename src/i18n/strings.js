@@ -5,6 +5,13 @@ export const STRINGS = {
       title: 'One project. One context layer.',
       leadBefore: 'APC defines a neutral, repository-owned way to store agent-readable project context in a canonical ',
       leadAfter: ' folder. It is designed for AI agents, editors, CLIs, and developer tooling that need a shared understanding of a project.',
+      product: {
+        kicker: 'The standard, in action',
+        title: 'APC sets the context. APX brings the crew.',
+        body: 'APX v2 implements APC in a local runtime for installing, coordinating, and managing AI agents. The standard stays tool-neutral; APX adds the crew and operator experience.',
+        crew: 'Meet the APX crew',
+        link: 'Explore APX v2'
+      },
       grid: {
         portable: {
           kicker: 'Concept',
@@ -32,6 +39,13 @@ export const STRINGS = {
       title: 'Un proyecto. Una capa de contexto.',
       leadBefore: 'APC define una forma neutral, propiedad del repositorio, de almacenar contexto de proyecto legible por agentes en una carpeta canónica ',
       leadAfter: '. Está diseñado para agentes de IA, editores, CLIs y herramientas de desarrollo que necesitan un entendimiento compartido de un proyecto.',
+      product: {
+        kicker: 'El estándar, en acción',
+        title: 'APC ordena el contexto. APX pone al equipo en marcha.',
+        body: 'APX v2 implementa APC en un runtime local para instalar, coordinar y administrar agentes de IA. El estándar sigue siendo neutral a herramientas; APX suma el equipo y la experiencia de operación.',
+        crew: 'Conocé al equipo de APX',
+        link: 'Explorá APX v2'
+      },
       grid: {
         portable: {
           kicker: 'Concepto',
