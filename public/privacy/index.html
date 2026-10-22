@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy · APX and Agent Project Context</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+  :root { color-scheme: light dark; --bg: #ffffff; --fg: #15171a; --muted: #5b6168; --line: #e3e5e8; --link: #1a7f37; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #08090a; --fg: #eceef0; --muted: #9aa1a8; --line: #22262b; --link: #7ee787; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 46rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .25rem; }
+  h2 { font-size: 1.2rem; margin: 2.25rem 0 .5rem; }
+  p, li { color: var(--fg); }
+  .muted { color: var(--muted); }
+  a { color: var(--link); }
+  ul { padding-left: 1.25rem; }
+  code { font-size: .9em; }
+  footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1rem; font-size: .85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>Privacy policy</h1>
+<p class="muted">APX and Agent Project Context (APC) · Last updated October 22, 2026</p>
+
+<p>APX is an open-source desktop app that runs AI agents on your own computer. APC is the open convention
+(<code>AGENTS.md</code> and <code>.apc/</code>) it implements. This policy explains what data APX handles and where it
+goes. The short version: APX runs on your machine, keeps your data there, and has no servers that receive your
+content.</p>
+
+<h2>Where your data lives</h2>
+<p>Your agents, chats, memory, files and settings are stored on the computer where you run APX. Passwords, keys and
+access tokens go to that computer's secret store (the system keychain where there is one). APX's authors do not run a
+service that receives them.</p>
+
+<h2>Google user data</h2>
+<p>You can connect your Google account to APX so your agents can work with Google Calendar, Gmail and Google Drive. Each
+part is connected on its own, and only after you approve it on Google's own consent page. With APX's sign-in, APX asks
+for:</p>
+<ul>
+  <li><strong>Google Calendar</strong> (<code>calendar.events</code>, <code>calendar.readonly</code>): to read your events
+    and free time, and to create, change or cancel the events you ask for, with invitations and Google Meet links.</li>
+  <li><strong>Gmail</strong> (<code>gmail.send</code>): to send an email you asked for. Every message is shown to you and
+    sent only after you approve it. APX does not read your mail with this access.</li>
+  <li><strong>Google Drive</strong> (<code>drive.file</code>): to create Google Docs and share them with the people you
+    name. APX reaches only the files it created.</li>
+  <li>Your email address (<code>openid</code>, <code>email</code>): to show you which account is connected.</li>
+</ul>
+<p>How this data is used:</p>
+<ul>
+  <li>Google data is requested and processed on your computer, only to do what you asked your agent to do. The access
+    token Google issues stays in your computer's secret store and is never sent to APX's authors.</li>
+  <li>When an agent reads an event or a file to answer you, that content goes to the AI model provider <em>you</em>
+    configured in APX (for example Google Gemini, OpenAI or a local model), as part of your request, under that
+    provider's terms. APX sends it nowhere else.</li>
+  <li>Google data is not sold, not used for advertising, not used to build user profiles, and not used to train or
+    improve AI or machine learning models, by APX or by its authors.</li>
+  <li>APX's authors never see your Google data. No human reads it, except you.</li>
+</ul>
+<p>APX's use and transfer to any other app of information received from Google APIs will adhere to the
+<a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>,
+including the Limited Use requirements.</p>
+
+<h2>Removing access and deleting data</h2>
+<p>Disconnect a Google part in APX (Resources › Integrations) to delete its stored token from your computer. You can also
+revoke APX's access at any time at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.
+Everything else APX stores is in its folder on your computer; uninstalling APX and deleting that folder removes it.</p>
+
+<h2>Usage numbers</h2>
+<p>Only if you say yes, APX sends anonymous usage numbers (for example the app version and how many agents you run) so
+its authors can see how it is used. They never include your content, your messages, your files or any Google data.
+You can turn them off in APX at any time.</p>
+
+<h2>This website</h2>
+<p>agentprojectcontext.com is a static site. It sets no cookies of its own and runs no analytics.</p>
+
+<h2>Changes and contact</h2>
+<p>If this policy changes, the date above changes with it. Questions: open an issue at
+<a href="https://github.com/agentprojectcontext/apx/issues">github.com/agentprojectcontext/apx</a>, or write to the
+support address shown on Google's consent screen for APX.</p>
+
+<footer><a href="/">Agent Project Context</a> · <a href="/terms/">Terms of service</a></footer>
+</main>
+</body>
+</html>

@@ -280,6 +280,14 @@ function Footer() {
           <a href={apxRepositoryUrl} target="_blank" rel="noreferrer" style={{ ...linkStyle, fontSize: '0.72rem' }}>
             APX
           </a>
+          {' · '}
+          <a href="/privacy/" style={{ ...linkStyle, fontSize: '0.72rem' }}>
+            {isEs ? 'Privacidad' : 'Privacy'}
+          </a>
+          {' · '}
+          <a href="/terms/" style={{ ...linkStyle, fontSize: '0.72rem' }}>
+            {isEs ? 'Términos' : 'Terms'}
+          </a>
         </span>
       </div>
     </div>
